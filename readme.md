@@ -2,11 +2,11 @@
 
 **First of all. thanks for your reading or star. If you have any quesetions, your issue or inqury are welcome.**
 
-首先。谢谢你的阅读或star。无论您有任何问题，欢迎您的issue或询问。
+首先。谢谢你的阅读或star。有任何问题，欢迎issue或询问。
 
 ## 1. Introduction
 
-The main body of the warehouse is a high performance I/O coroutine library, to achieve high concurrency, high efficiency coroutine scheduling.
+The main body of the repo is a high performance I/O coroutine library, to achieve high concurrency, high efficiency coroutine scheduling.
 
 - Design thread pool and coroutine queue, realize asymmetric coroutine and coroutine switch based on ucontext_t, and realize coroutine scheduler.
 - Implements the timing function based on epoll timeout, encapsulates all file descriptors of the scheduler, and solves the problem of high CPU usage caused by busy waiting in idle state.
