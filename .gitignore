@@ -1,5 +1,6 @@
-build/
+build/*
 document/
 bin/
 build/
-lib/*
+*.txt
+!CmakeLists.txt
