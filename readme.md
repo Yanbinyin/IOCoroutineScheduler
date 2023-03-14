@@ -1,5 +1,11 @@
 # IO Coroutine Scheduler
 
+**First of all. thanks for your watch and star. If you have any quesetions, look forward to your issue or ask inqury.**
+
+## 1. Introduction
+
+本仓库主体是一个高性能的IO协程库，测试过，性能非常不错，做的过程中写了很多注释，push到GitHub方便自己后面查阅。
+
 ## 1. Introduction
 
 本仓库主体是一个高性能的IO协程库，做的过程中写了很多注释，push到GitHub方便自己后面查阅。
