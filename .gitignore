@@ -1,6 +1,9 @@
-build/*
+# ignore config file and output file
 document/
-bin/
-build/
 *.txt
 !CmakeLists.txt
+
+# ignore build file
+build/*
+bin/
+*.o
