@@ -4,6 +4,6 @@ document/
 !CmakeLists.txt
 
 # ignore build file
-build/*
+build/
 bin/
 *.o
