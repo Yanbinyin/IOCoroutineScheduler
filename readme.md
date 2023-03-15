@@ -2,7 +2,7 @@
 
 **First of all. thanks for your reading or star. If you have any quesetions, your issue or inqury are welcome.**
 
-首先。谢谢你的阅读或star。有任何问题，欢迎issue或询问。
+首先。谢谢你的阅读或star。有任何问题，欢迎issue或提问。
 
 ## 1. Introduction
 
