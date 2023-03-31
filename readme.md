@@ -1,51 +1,74 @@
 # IO Coroutine Scheduler
 
-**First of all. thanks for your reading or star. If you have any quesetions, your issue or inqury are welcome.**
-
-首先。谢谢你的阅读或star。有任何问题，欢迎issue或询问。
-
-## 1. Introduction
-
-The main body of the repo is a high performance I/O coroutine library, to achieve high concurrency, high efficiency coroutine scheduling.
+## what is this?
+This repository contains a high performance I/O coroutine library, which can achieve high concurrency, high efficiency coroutine scheduling.
 
 - Design thread pool and coroutine queue, realize asymmetric coroutine and coroutine switch based on ucontext_t, and realize coroutine scheduler.
 - Implements the timing function based on epoll timeout, encapsulates all file descriptors of the scheduler, and solves the problem of high CPU usage caused by busy waiting in idle state.
 - hook System call interface, enabling apis that do not have asynchronous functions (such as API at the bottom of the system, Socket, IO, and sleep-related apis) to display asynchronous functions.
 - Encapsulates epoll and designs I/O coroutine scheduler to achieve high concurrency and high efficiency coroutine scheduling.
 
-本仓库主体是一个高性能的IO协程库，实现高并发、高效率的协程调度。
+<strong>Implementation</strong>  
+All codes were wrote in _C++11:_   
+moudles you may need:  
 
-- 设计线程池和协程队列，基于ucontext_t实现非对称协程和协程切换，实现协程调度器。
-- 基于epoll 超时实现定时功能，封装调度器所有的文件描述符，解决在idle状态下忙等待导致CPU占用率高的问题。
-- hook系统调用接口，使不具备异步功能的API（如系统底层API、Socket、IO、sleep相关的API等）展现出异步的功能。
-- 封装了epoll、设计I/O协程调度器，实现高并发、高效率的协程调度。
+_C++:_  
+- `cmake` for build repo  
+- `boost`   
+- `yaml` for setting configuration 
 
-## 2. Frame Struct
+<strong>Usage</strong>  
+for C++, you need to compile first  
+    `mkdir build && cd build`  
+    `cmake ..`  
+    `make`  
 
-- ### Semaphore & Lock(信号量、锁模块)
-- ### Log(日志系统)
-- ### Config(配置系统)
-- ### Thread(线程模块)
-- ### Corountine(协程模块)
-- ### IO Corountine Scheduling(IO协程调度模块)
-- ### Hook(hook模块)
-- ### Timer(定时器模块)
-- ### Data Processing(数据压缩、序列化与反序列化模块)
-- ### Test(测试模块)
+when it's done, you are ready to run the executable file cmd operations, such as   
+    `./bin/test_coroutine`  
 
-## 3. Complie
+<strong>Have fun!</strong>  
 
-This project does not contain any anycomplex dependencies. After installing gcc, cmake, yaml, and openssl, you can clone and directly use the following commands to compile in any folder.
+## Contents
+* Log  
+It is an log class that can help you record running information or debug through files or command line.  
 
-本项目不含复杂依赖，安装gcc、cmake、yaml、openssl后,可以在任意文件夹下clone并使用下面命令编译。
+* Config  
+Set convention priority configuration. Configuration can be modified through code or reading from files.
 
-```
-mkdir build && cd build
-cmake ..
-make
-```
+* Semaphore & Lock  
+Protect resources.  
 
-## 4. Folder structure
+* Thread  
+Provides thread classes and thread synchronization classes, based on the `pthread` implementation.
+    > Why not use the `thread` provided by C++11?  
+    > Because `thread` is actually implemented based on `pthread`. In addition, C++11 does not provide read/write mutex, RWMutex, Spinlock, etc. In high-concurrency scenarios, these objects are often needed, and we do not need cross-platform development (only linux is supported). Therefore, we choose to encapsulate `pthread` by ourselves.
+
+* Corountine  
+Realization of asymmetric coroutine based on `ucontext_t`. Coroutine scheduling is not involved.  
+
+* Corountine Scheduling  
+A N-M coroutine scheduler is implemented, N threads run M coroutines, coroutines can be switched between threads, can also be bound to the specified thread run.
+
+* IO Corountine Scheduling  
+It inherits from the coroutine scheduler, encapsulates epoll, and supports registering read and write event callbacks for socket fd.  
+IO coroutine scheduling also solves the problem of high CPU usage caused by the scheduler's busy waiting in idle state. The IO coroutine scheduler uses a pair of pipe FDS to tickle the coroutine. When the scheduler is idle, the idle coroutine blocks on the pipe's read descriptor by epoll_wait, waiting for the pipe's readable event. When a new task is added, the tickle method writes the pipeline, the idle coroutine detects that the pipeline is readable and exits, and the scheduler executes the scheduling. 
+
+* Hook  
+hook system base and socket related API, socket IO related API, and sleep series API. The opening control of hooks is thread-granular and optional. Through hook module, some apis without asynchronous functions can be made to show asynchronous performance, such as MySQL.
+    > Note: this article refers to the system call interfaces provided by the C standard function library, not to the system calls provided by Linux alone. For example, malloc and free are not system calls; they are the interfaces provided by the C standard function library.  
+
+* Timer  
+Implement timer function based on epoll timeout, precision millisecond level, support the execution of callback function after the specified timeout period..  
+
+* Data Processing  
+Byte array container that provides serialization and deserialization of the underlying types..  
+
+* Test  
+Testcases.  
+  
+* a lot to be continued...
+
+## Folder structure
 
 + bin：Binary files
 + build：Build filess
