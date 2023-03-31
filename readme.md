@@ -1,8 +1,5 @@
 # IO Coroutine Scheduler
 
-## what is this?
-This repository contains a high performance I/O coroutine library, which can achieve high concurrency, high efficiency coroutine scheduling.
-
 - Design thread pool and coroutine queue, realize asymmetric coroutine and coroutine switch based on ucontext_t, and realize coroutine scheduler.
 - Implements the timing function based on epoll timeout, encapsulates all file descriptors of the scheduler, and solves the problem of high CPU usage caused by busy waiting in idle state.
 - hook System call interface, enabling apis that do not have asynchronous functions (such as API at the bottom of the system, Socket, IO, and sleep-related apis) to display asynchronous functions.
