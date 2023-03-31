@@ -1,12 +1,15 @@
 # IO Coroutine Scheduler
 
+## what is this?
+This repository contains high performance I/O coroutine library, which can achieve high concurrency, high efficiency coroutine scheduling.
+
 - Design thread pool and coroutine queue, realize asymmetric coroutine and coroutine switch based on ucontext_t, and realize coroutine scheduler.
 - Implements the timing function based on epoll timeout, encapsulates all file descriptors of the scheduler, and solves the problem of high CPU usage caused by busy waiting in idle state.
 - hook System call interface, enabling apis that do not have asynchronous functions (such as API at the bottom of the system, Socket, IO, and sleep-related apis) to display asynchronous functions.
 - Encapsulates epoll and designs I/O coroutine scheduler to achieve high concurrency and high efficiency coroutine scheduling.
 
 <strong>Implementation</strong>  
-All codes were wrote in _C++11:_   
+Almost all codes were wrote in _C++11:_   
 moudles you may need:  
 
 _C++:_  
@@ -71,6 +74,6 @@ Testcases.
 + build：Build filess
 + cmake：Cmake include files
 + CMakeLists.txt：cmake
-+ lib：The output path of the library
++ lib：.so file
 + server-bin：Source code
 + tests：Testing code
