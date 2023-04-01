@@ -1,10 +1,10 @@
 //字节序操作函数(大端/小端)
 
-#ifndef __SYLAR_ENDIAN_H__
-#define __SYLAR_ENDIAN_H__
+#ifndef __BIN_ENDIAN_H__
+#define __BIN_ENDIAN_H__
 
-#define SYLAR_LITTLE_ENDIAN 1   //小端是1
-#define SYLAR_BIG_ENDIAN 2      //大端是2
+#define BIN_LITTLE_ENDIAN 1   //小端是1
+#define BIN_BIG_ENDIAN 2      //大端是2
 
 #include <byteswap.h>
 #include <stdint.h>
@@ -57,14 +57,14 @@ namespace bin{
     */
 
     #if BYTE_ORDER == BIG_ENDIAN
-    #define SYLAR_BYTE_ORDER SYLAR_BIG_ENDIAN
+    #define BIN_BYTE_ORDER BIN_BIG_ENDIAN
     #else
-    #define SYLAR_BYTE_ORDER SYLAR_LITTLE_ENDIAN
+    #define BIN_BYTE_ORDER BIN_LITTLE_ENDIAN
     #endif
 
 
 
-    #if SYLAR_BYTE_ORDER == SYLAR_BIG_ENDIAN //判断物理机大小端
+    #if BIN_BYTE_ORDER == BIN_BIG_ENDIAN //判断物理机大小端
     //得到大端 大端机器 什么都不用操作
     //只在小端机器上执行byteswap, 在大端机器上什么都不做
     template<class T>

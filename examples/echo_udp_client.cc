@@ -3,7 +3,7 @@
 #include "IOCoroutineScheduler/log.h"
 #include <stdlib.h>
 
-static bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static bin::Logger::ptr g_logger = BIN_LOG_ROOT();
 
 const char* ip = nullptr;
 uint16_t port = 0;
@@ -11,7 +11,7 @@ uint16_t port = 0;
 void run(){
     bin::IPAddress::ptr addr = bin::Address::LookupAnyIPAddress(ip);
     if(!addr){
-        SYLAR_LOG_ERROR(g_logger) << "invalid ip: " << ip;
+        BIN_LOG_ERROR(g_logger) << "invalid ip: " << ip;
         return;
     }
     addr->setPort(port);
@@ -20,7 +20,7 @@ void run(){
 
     bin::IOManager::GetThis()->schedule([sock](){
             bin::Address::ptr addr(new bin::IPv4Address);
-            SYLAR_LOG_INFO(g_logger) << "begin recv";
+            BIN_LOG_INFO(g_logger) << "begin recv";
             while(true){
                 char buff[1024];
                 int len = sock->recvFrom(buff, 1024, addr);
@@ -38,12 +38,12 @@ void run(){
             int len = sock->sendTo(line.c_str(), line.size(), addr);
             if(len < 0){
                 int err = sock->getError();
-                SYLAR_LOG_ERROR(g_logger) << "send error err=" << err
+                BIN_LOG_ERROR(g_logger) << "send error err=" << err
                         << " errstr=" << strerror(err) << " len=" << len
                         << " addr=" << *addr
                         << " sock=" << *sock;
             } else {
-                SYLAR_LOG_INFO(g_logger) << "send " << line << " len:" << len;
+                BIN_LOG_INFO(g_logger) << "send " << line << " len:" << len;
             }
         }
     }
@@ -51,7 +51,7 @@ void run(){
 
 int main(int argc, char** argv){
     if(argc < 3){
-        SYLAR_LOG_INFO(g_logger) << "use as[" << argv[0] << " ip port]";
+        BIN_LOG_INFO(g_logger) << "use as[" << argv[0] << " ip port]";
         return 0;
     }
     ip = argv[1];

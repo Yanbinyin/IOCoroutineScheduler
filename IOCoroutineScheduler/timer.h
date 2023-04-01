@@ -6,8 +6,8 @@
     使用场景：在特定时间段或者某一段时间内需要执行一些任务等场景
 */
 
-#ifndef __SYLAR_TIMER_H__
-#define __SYLAR_TIMER_H__
+#ifndef __BIN_TIMER_H__
+#define __BIN_TIMER_H__
 
 #include <memory>
 #include <vector>

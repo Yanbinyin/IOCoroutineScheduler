@@ -6,7 +6,7 @@
 
 namespace bin {
 
-static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
 HolderStats HolderStatsSet::getTotal(){
     HolderStats rt;
@@ -225,7 +225,7 @@ int32_t WeightLoadBalance::getIdx(uint64_t v){
     uint64_t dis = (v == (uint64_t)-1 ? rand() : v) % total;
     auto it = std::upper_bound(m_weights.begin()
                 ,m_weights.end(), dis);
-    SYLAR_ASSERT(it != m_weights.end());
+    BIN_ASSERT(it != m_weights.end());
     return std::distance(m_weights.begin(), it);
 }
 
@@ -411,7 +411,7 @@ LoadBalanceItem::ptr SDLoadBalance::createLoadBalanceItem(ILoadBalance::Type typ
 void SDLoadBalance::onServiceChange(const std::string& domain, const std::string& service
                             ,const std::unordered_map<uint64_t, ServiceItemInfo::ptr>& old_value
                             ,const std::unordered_map<uint64_t, ServiceItemInfo::ptr>& new_value){
-    SYLAR_LOG_INFO(g_logger) << "onServiceChange domain=" << domain
+    BIN_LOG_INFO(g_logger) << "onServiceChange domain=" << domain
                              << " service=" << service;
     auto type = getType(domain, service);
     auto lb = get(domain, service, true);
@@ -433,7 +433,7 @@ void SDLoadBalance::onServiceChange(const std::string& domain, const std::string
     for(auto& i : add_values){
         auto stream = m_cb(i.second);
         if(!stream){
-            SYLAR_LOG_ERROR(g_logger) << "create stream fail, " << i.second->toString();
+            BIN_LOG_ERROR(g_logger) << "create stream fail, " << i.second->toString();
             continue;
         }
         

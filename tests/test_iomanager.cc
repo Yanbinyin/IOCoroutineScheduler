@@ -7,36 +7,36 @@
 #include <iostream>
 #include <sys/epoll.h>
 
-bin::Logger::ptr g_logger = SYLAR_LOG_NAME("root");
+bin::Logger::ptr g_logger = BIN_LOG_NAME("root");
 
 
 //block1: 基础测试
 #if 0
 void func1(){
-    SYLAR_LOG_INFO(g_logger) << "func1 work!!!!!!!!!!";
+    BIN_LOG_INFO(g_logger) << "func1 work!!!!!!!!!!";
 }
 
 void func2(){
-    SYLAR_LOG_INFO(g_logger) << "func2 work!!!!!!!!!!";
+    BIN_LOG_INFO(g_logger) << "func2 work!!!!!!!!!!";
 }
 
 int main()
 {
     bin::Thread::SetName("test");
     //创建IO调度器
-    SYLAR_LOG_INFO(g_logger) << "test begin";
+    BIN_LOG_INFO(g_logger) << "test begin";
     bin::IOManager iom;
 	
     //添加函数任务
-    SYLAR_LOG_INFO(g_logger) << "add func";
+    BIN_LOG_INFO(g_logger) << "add func";
     iom.schedule(&func1);
 	
     //添加协程任务
-    SYLAR_LOG_INFO(g_logger) << "add Fiber";
+    BIN_LOG_INFO(g_logger) << "add Fiber";
     bin::Fiber::ptr cor(new bin::Fiber(&func2));
     iom.schedule(cor);
 
-    SYLAR_LOG_INFO(g_logger) << "test end";
+    BIN_LOG_INFO(g_logger) << "test end";
 
 
     return 0;
@@ -58,7 +58,7 @@ RETURN VALUE
 int sock = 0;
 
 void test_fiber(){
-    SYLAR_LOG_INFO(g_logger) << "test_fiber sock=" << sock;
+    BIN_LOG_INFO(g_logger) << "test_fiber sock=" << sock;
 
     //sleep(5);
 
@@ -78,17 +78,17 @@ void test_fiber(){
     
     if(!connect(sock, (const sockaddr*)&addr, sizeof(addr))){
     }else if(errno == EINPROGRESS){
-        SYLAR_LOG_INFO(g_logger) << "add event errno=" << errno << " " << strerror(errno);
+        BIN_LOG_INFO(g_logger) << "add event errno=" << errno << " " << strerror(errno);
         bin::IOManager::GetThis()->addEvent(sock, bin::IOManager::READ
-                    ,[](){ SYLAR_LOG_INFO(g_logger) << "read callback"; });
+                    ,[](){ BIN_LOG_INFO(g_logger) << "read callback"; });
         bin::IOManager::GetThis()->addEvent(sock, bin::IOManager::WRITE, [](){
-            SYLAR_LOG_INFO(g_logger) << "write callback";
+            BIN_LOG_INFO(g_logger) << "write callback";
             //close(sock);
             bin::IOManager::GetThis()->cancelEvent(sock, bin::IOManager::READ);
             close(sock);
         });
     }else{
-        SYLAR_LOG_INFO(g_logger) << "else " << errno << " " << strerror(errno);
+        BIN_LOG_INFO(g_logger) << "else " << errno << " " << strerror(errno);
     }
 }
 
@@ -104,7 +104,7 @@ void test_timer(){
     bin::IOManager iom(1);
     s_timer = iom.addTimer(1000, [](){
         static int i = 0;
-        SYLAR_LOG_INFO(g_logger) << "hello timer i=" << i;
+        BIN_LOG_INFO(g_logger) << "hello timer i=" << i;
         if(++i == 3){
             s_timer->reset(2000, true);
             //s_timer->cancel();

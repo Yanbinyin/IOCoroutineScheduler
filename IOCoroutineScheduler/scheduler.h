@@ -17,8 +17,8 @@
     a. 方式一：协程随机选择一个空闲的任意的线程上执行
     b. 方式二：给协程指定一个线程去执行
 */
-#ifndef __SYLAR_SCHEDULER_H__
-#define __SYLAR_SCHEDULER_H__
+#ifndef __BIN_SCHEDULER_H__
+#define __BIN_SCHEDULER_H__
 
 #include <memory>
 #include <vector>

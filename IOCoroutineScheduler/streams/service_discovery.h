@@ -1,5 +1,5 @@
-#ifndef __SYLAR_STREAMS_SERVICE_DISCOVERY_H__
-#define __SYLAR_STREAMS_SERVICE_DISCOVERY_H__
+#ifndef __BIN_STREAMS_SERVICE_DISCOVERY_H__
+#define __BIN_STREAMS_SERVICE_DISCOVERY_H__
 
 #include <memory>
 #include <unordered_map>

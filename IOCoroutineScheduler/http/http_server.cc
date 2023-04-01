@@ -8,7 +8,7 @@
 namespace bin::http {
 //namespace http {
 
-    static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+    static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
     HttpServer::HttpServer(bool keepalive
                     ,bin::IOManager* worker
@@ -31,14 +31,14 @@ namespace bin::http {
 
     //处理已经连接的客户端  完成数据交互通信
     void HttpServer::handleClient(Socket::ptr client){
-        SYLAR_LOG_DEBUG(g_logger) << "handleClient " << *client;
+        BIN_LOG_DEBUG(g_logger) << "handleClient " << *client;
         HttpSession::ptr session(new HttpSession(client));
         //power:长连接只要req不关闭，do while将一直循环
         do{
             //接收请求报文
             auto req = session->recvRequest();
             if(!req){
-                SYLAR_LOG_DEBUG(g_logger) << "recv http request fail, errno=" << errno << " errstr=" << strerror(errno)
+                BIN_LOG_DEBUG(g_logger) << "recv http request fail, errno=" << errno << " errstr=" << strerror(errno)
                         << " cliet:" << *client << " keep_alive=" << m_isKeepalive;
                 break;
             }
@@ -52,8 +52,8 @@ namespace bin::http {
             m_dispatch->handle(req, rsp, session);
             
             //取消注释显示请求和响应报文的内容
-            SYLAR_LOG_INFO(g_logger) << "request:" << std::endl << *req;
-            SYLAR_LOG_INFO(g_logger) << "response:" << std::endl << *rsp;
+            BIN_LOG_INFO(g_logger) << "request:" << std::endl << *req;
+            BIN_LOG_INFO(g_logger) << "response:" << std::endl << *rsp;
             
             session->sendResponse(rsp);
             if(!m_isKeepalive || req->isClose()){

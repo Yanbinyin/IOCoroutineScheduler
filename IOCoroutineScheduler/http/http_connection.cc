@@ -6,7 +6,7 @@
 namespace bin::http{
 //namespace http {
 
-    static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+    static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
 
 
@@ -28,7 +28,7 @@ namespace bin::http{
     }
 
     HttpConnection::~HttpConnection(){
-        SYLAR_LOG_DEBUG(g_logger) << "HttpConnection::~HttpConnection";
+        BIN_LOG_DEBUG(g_logger) << "HttpConnection::~HttpConnection";
     }
 
     HttpResponse::ptr HttpConnection::recvResponse(){
@@ -69,7 +69,7 @@ namespace bin::http{
 
             offset = len - nparse;
             if(offset == (int)buff_size){ //读了数据但是没有解析  直到自己定义的缓存已经满了
-                SYLAR_LOG_WARN(g_logger) << "HttpConnection::recvResponse http response buffer out of  range";
+                BIN_LOG_WARN(g_logger) << "HttpConnection::recvResponse http response buffer out of  range";
                 close();
                 return nullptr;
             }
@@ -117,7 +117,7 @@ namespace bin::http{
                 //减2非常关键 因为报文首部和实体中间还有一个空行\r\n将它算作首部的长度 不应算在body的长度中
                 //len -= 2; //这里bin后面注释掉了，相应的if判断涉及len的都+2
                 
-                SYLAR_LOG_DEBUG(g_logger) << "content_len=" << client_parser.content_len;
+                BIN_LOG_DEBUG(g_logger) << "content_len=" << client_parser.content_len;
 
                 /*如果当前解析包中的主体长度 <= 当前已经接受到的并且解析好的报文主体长度
                   说明缓冲区中当前分块的数据量较少，另一个分块的的数据量较多。将client_parser.content_len这么多的数据放入body，
@@ -179,7 +179,7 @@ namespace bin::http{
         //3.3 将完整的报文实体放入HttpRequestParser::HttpRequest对象之中
         if(!body.empty()){
             auto content_encoding = parser->getData()->getHeader("content-encoding");
-            SYLAR_LOG_DEBUG(g_logger) << "content_encoding: " << content_encoding << " size=" << body.size();
+            BIN_LOG_DEBUG(g_logger) << "content_encoding: " << content_encoding << " size=" << body.size();
             // //hack:看不懂这一堆zs的目的 //todo: 为了编译注释掉这里和头文件
             // if(strcasecmp(content_encoding.c_str(), "gzip") == 0){
             //     auto zs = ZlibStream::CreateGzip(false);
@@ -338,7 +338,7 @@ namespace bin::http{
                                                     ,uint32_t max_request){
         Uri::ptr turi = Uri::Create(uri);
         if(!turi){
-            SYLAR_LOG_ERROR(g_logger) << "invalid uri=" << uri;
+            BIN_LOG_ERROR(g_logger) << "invalid uri=" << uri;
         }
         return std::make_shared<HttpConnectionPool>(turi->getHost()
                 , vhost, turi->getPort(), turi->getScheme() == "https"
@@ -389,17 +389,17 @@ namespace bin::http{
         if(!ptr){ //没有值需要去创建
             IPAddress::ptr addr = Address::LookupAnyIPAddress(m_host);
             if(!addr){
-                SYLAR_LOG_ERROR(g_logger) << "get addr fail: " << m_host;
+                BIN_LOG_ERROR(g_logger) << "get addr fail: " << m_host;
                 return nullptr;
             }
             addr->setPort(m_port);
             Socket::ptr sock = m_isHttps ? SSLSocket::CreateTCP(addr) : Socket::CreateTCP(addr);
             if(!sock){
-                SYLAR_LOG_ERROR(g_logger) << "create sock fail: " << *addr;
+                BIN_LOG_ERROR(g_logger) << "create sock fail: " << *addr;
                 return nullptr;
             }
             if(!sock->connect(addr)){
-                SYLAR_LOG_ERROR(g_logger) << "sock connect fail: " << *addr;
+                BIN_LOG_ERROR(g_logger) << "sock connect fail: " << *addr;
                 return nullptr;
             }
 

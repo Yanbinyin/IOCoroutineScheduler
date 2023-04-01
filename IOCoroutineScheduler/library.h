@@ -1,5 +1,5 @@
-#ifndef __SYLAR_LIBRARY_H__
-#define __SYLAR_LIBRARY_H__
+#ifndef __BIN_LIBRARY_H__
+#define __BIN_LIBRARY_H__
 
 #include <memory>
 #include "module.h"

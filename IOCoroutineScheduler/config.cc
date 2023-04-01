@@ -14,7 +14,7 @@ namespace bin{
     static void ListAllMember(const std::string& prefix, const YAML::Node& node, std::list<std::pair<std::string, const YAML::Node> >& output){
         //包含非法字符，直接返回
         if(prefix.find_first_not_of("abcdefghijklmnopqrstuvwxyz._012345678 ") != std::string::npos){
-            SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "Config invalid name: " << prefix << " : " << node;
+            BIN_LOG_ERROR(BIN_LOG_ROOT()) << "Config invalid name: " << prefix << " : " << node;
             return;
         }
         

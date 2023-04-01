@@ -1,5 +1,5 @@
-#ifndef __SYLAR_STREAMS_ASYNC_SOCKET_STREAM_H__
-#define __SYLAR_STREAMS_ASYNC_SOCKET_STREAM_H__
+#ifndef __BIN_STREAMS_ASYNC_SOCKET_STREAM_H__
+#define __BIN_STREAMS_ASYNC_SOCKET_STREAM_H__
 
 #include "socket_stream.h"
 #include <list>

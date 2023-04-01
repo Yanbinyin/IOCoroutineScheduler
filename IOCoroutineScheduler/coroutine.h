@@ -43,8 +43,8 @@
 /*power:
     调试test_coroutine时，要修改swapin和swapout还有yieldtohold();
 */
-#ifndef __SYLAR_FIBER_H__
-#define __SYLAR_FIBER_H__
+#ifndef __BIN_FIBER_H__
+#define __BIN_FIBER_H__
 
 #include <memory>
 #include <functional>

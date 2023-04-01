@@ -1,5 +1,5 @@
-#ifndef __SYLAR_UTIL_HASH_UTIL_H__
-#define __SYLAR_UTIL_HASH_UTIL_H__
+#ifndef __BIN_UTIL_HASH_UTIL_H__
+#define __BIN_UTIL_HASH_UTIL_H__
 
 #include <stdint.h>
 #include <string>

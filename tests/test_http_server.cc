@@ -3,7 +3,7 @@
 
 
 
-static bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static bin::Logger::ptr g_logger = BIN_LOG_ROOT();
 
 #define XX(...) #__VA_ARGS__
 

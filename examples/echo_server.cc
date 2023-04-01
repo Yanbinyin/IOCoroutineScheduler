@@ -4,7 +4,7 @@
 #include "IOCoroutineScheduler/bytearray.h"
 #include "IOCoroutineScheduler/address.h"
 
-static bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static bin::Logger::ptr g_logger = BIN_LOG_ROOT();
 
 /*目的：构建一个相对标准的对这一套服务器框架接口使用的小实例，以加强对接口使用的理解以及排错
 
@@ -47,7 +47,7 @@ EchoServer::EchoServer(int type)
 }
 
 void EchoServer::handleClient(bin::Socket::ptr client){
-    SYLAR_LOG_INFO(g_logger) << "handleClient " << *client;   
+    BIN_LOG_INFO(g_logger) << "handleClient " << *client;   
     bin::ByteArray::ptr ba(new bin::ByteArray);
     while(true){
         ba->clear();
@@ -56,15 +56,15 @@ void EchoServer::handleClient(bin::Socket::ptr client){
 
         int rt = client->recv(&iovs[0], iovs.size());
         if(rt == 0){
-            SYLAR_LOG_INFO(g_logger) << "client close: " << *client;
+            BIN_LOG_INFO(g_logger) << "client close: " << *client;
             break;
         } else if(rt < 0){
-            SYLAR_LOG_INFO(g_logger) << "client error rt=" << rt << " errno=" << errno << " errstr=" << strerror(errno);
+            BIN_LOG_INFO(g_logger) << "client error rt=" << rt << " errno=" << errno << " errstr=" << strerror(errno);
             break;
         }
         ba->setPosition(ba->getPosition() + rt);    //getWriteBuffers不会修改position的位置，set一下
         ba->setPosition(0);     //set 0 是为了toString
-        //SYLAR_LOG_INFO(g_logger) << "recv rt=" << rt << " data=" << std::string((char*)iovs[0].iov_base, rt);
+        //BIN_LOG_INFO(g_logger) << "recv rt=" << rt << " data=" << std::string((char*)iovs[0].iov_base, rt);
         if(m_type == 1){//text 
             std::cout << ba->toString();// << std::endl;
         } else {
@@ -79,7 +79,7 @@ void EchoServer::handleClient(bin::Socket::ptr client){
 int type = 1;
 
 void run(){
-    SYLAR_LOG_INFO(g_logger) << "server type=" << type;
+    BIN_LOG_INFO(g_logger) << "server type=" << type;
     EchoServer::ptr es(new EchoServer(type));
     auto addr = bin::Address::LookupAny("0.0.0.0:8888");
     while(!es->bind(addr)){
@@ -91,10 +91,10 @@ void run(){
 
 //argc表示参数的个数(至少为1，argv[0]=调用函数时的命令)，argv后面的参数是其他命令
 int main(int argc, char** argv){
-    SYLAR_LOG_INFO(g_logger) << argc << " " << argv[0];
+    BIN_LOG_INFO(g_logger) << argc << " " << argv[0];
 
     if(argc < 2){
-        SYLAR_LOG_INFO(g_logger) << "used as[" << argv[0] << " -t] or [" << argv[0] << " -b]";
+        BIN_LOG_INFO(g_logger) << "used as[" << argv[0] << " -t] or [" << argv[0] << " -b]";
         return 0;
     }
 

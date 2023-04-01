@@ -1,7 +1,7 @@
 #include "IOCoroutineScheduler/bytearray.h"
 #include "IOCoroutineScheduler/bin.h"
 
-static bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static bin::Logger::ptr g_logger = BIN_LOG_ROOT();
 
 void test(){
 #define XX(type, len, write_fun, read_fun, base_len){\
@@ -18,11 +18,11 @@ void test(){
     ba->setPosition(0); \
     for(size_t i = 0; i < vec.size(); ++i){ \
         type v = ba->read_fun(); \
-        SYLAR_ASSERT(v == vec[i]); \
+        BIN_ASSERT(v == vec[i]); \
     } \
-    SYLAR_ASSERT(ba->getReadSize() == 0); \
+    BIN_ASSERT(ba->getReadSize() == 0); \
     /*4.显示一下内存空间开辟的总容量，已经实际使用的空间大小，内存结点个数等信息*/\
-    SYLAR_LOG_INFO(g_logger) << #write_fun "\t/" #read_fun " \t(" #type " )\t len=" << len \
+    BIN_LOG_INFO(g_logger) << #write_fun "\t/" #read_fun " \t(" #type " )\t len=" << len \
                     << " base_len=" << base_len << " size=" << ba->getSize(); \
 }
 
@@ -55,20 +55,20 @@ void test(){
     ba->setPosition(0); \
     for(size_t i = 0; i < vec.size(); ++i){ \
         type v = ba->read_fun(); \
-        SYLAR_ASSERT(v == vec[i]); \
+        BIN_ASSERT(v == vec[i]); \
     } \
-    SYLAR_ASSERT(ba->getReadSize() == 0); \
-    SYLAR_LOG_INFO(g_logger) << #write_fun "/" #read_fun " (" #type " ) len=" << len \
+    BIN_ASSERT(ba->getReadSize() == 0); \
+    BIN_LOG_INFO(g_logger) << #write_fun "/" #read_fun " (" #type " ) len=" << len \
                     << " base_len=" << base_len << " size=" << ba->getSize(); \
     /*想对于上一个的不同体现在下面这些方面*/ \
     ba->setPosition(0); \
-    SYLAR_ASSERT(ba->writeToFile("/tmp/" #type "_" #len "-" #read_fun ".dat")); \
+    BIN_ASSERT(ba->writeToFile("/tmp/" #type "_" #len "-" #read_fun ".dat")); \
     bin::ByteArray::ptr ba2(new bin::ByteArray(base_len * 2)); \
-    SYLAR_ASSERT(ba2->readFromFile("/tmp/" #type "_" #len "-" #read_fun ".dat")); \
+    BIN_ASSERT(ba2->readFromFile("/tmp/" #type "_" #len "-" #read_fun ".dat")); \
     ba2->setPosition(0); \
-    SYLAR_ASSERT(ba->toString() == ba2->toString()); \
-    SYLAR_ASSERT(ba->getPosition() == 0); \
-    SYLAR_ASSERT(ba2->getPosition() == 0); \
+    BIN_ASSERT(ba->toString() == ba2->toString()); \
+    BIN_ASSERT(ba->getPosition() == 0); \
+    BIN_ASSERT(ba2->getPosition() == 0); \
 }
     XX(int8_t,  100, writeFint8, readFint8, 1);
     XX(uint8_t, 100, writeFuint8, readFuint8, 1);

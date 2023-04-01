@@ -25,17 +25,17 @@ bin::ConfigVar<std::unordered_map<std::string, int> >::ptr g_str_int_umap_value_
 
 void print_yaml(const YAML::Node& node, int level){
     if(node.IsScalar()){
-        SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << std::string(level * 4, ' ') << node.Scalar() << " - " << node.Type() << " - " << level;
+        BIN_LOG_INFO(BIN_LOG_ROOT()) << std::string(level * 4, ' ') << node.Scalar() << " - " << node.Type() << " - " << level;
     }else if(node.IsNull()){
-        SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << std::string(level * 4, ' ') << "NULL - " << node.Type() << "-" << level;
+        BIN_LOG_INFO(BIN_LOG_ROOT()) << std::string(level * 4, ' ') << "NULL - " << node.Type() << "-" << level;
     }else if(node.IsMap()){
         for(auto it = node.begin(); it != node.end(); ++it){
-            SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << std::string(level * 4, ' ') << it->first << " - " << it->second.Type() << " - " << level;
+            BIN_LOG_INFO(BIN_LOG_ROOT()) << std::string(level * 4, ' ') << it->first << " - " << it->second.Type() << " - " << level;
             print_yaml(it->second, level + 1);
         }
     }else if(node.IsSequence()){
         for(size_t i = 0; i < node.size(); ++i){
-            SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << std::string(level * 4, ' ') << i << " - " << node[i].Type() << " - " << level;
+            BIN_LOG_INFO(BIN_LOG_ROOT()) << std::string(level * 4, ' ') << i << " - " << node[i].Type() << " - " << level;
             print_yaml(node[i], level);
         }
     }
@@ -46,31 +46,31 @@ void test_yaml(){
     //YAML::Node root = YAML::LoadFile("../bin/conf/log.yml" );
     YAML::Node root = YAML::LoadFile("../bin/conf/test.yml" );
     print_yaml(root, 0);
-    SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << root;
+    BIN_LOG_INFO(BIN_LOG_ROOT()) << root;
 }
 
 //测试基本数据类型和STL
 void test_config(){
-    SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "before: " << g_int_value_config->getValue();
-    SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "before:" << g_float_value_config->toString();
+    BIN_LOG_INFO(BIN_LOG_ROOT()) << "before: " << g_int_value_config->getValue();
+    BIN_LOG_INFO(BIN_LOG_ROOT()) << "before:" << g_float_value_config->toString();
 
 //vector list set...容器专用宏
 #define XX(g_var, name, prefix) \
     { \
         auto& v = g_var->getValue(); \
         for(auto& i : v){ \
-            SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << #prefix ": " #name ":" << i; \
+            BIN_LOG_INFO(BIN_LOG_ROOT()) << #prefix ": " #name ":" << i; \
         } \
-        SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << #prefix ": " #name " yaml :" << g_var->toString(); \
+        BIN_LOG_INFO(BIN_LOG_ROOT()) << #prefix ": " #name " yaml :" << g_var->toString(); \
     }
 //map专用宏
 #define XX_M(g_var, name, prefix) \
     { \
         auto& v = g_var->getValue(); \
         for(auto& i : v){ \
-            SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << #prefix ": " #name ": {" << i.first << " - " << i.second << "}"; \
+            BIN_LOG_INFO(BIN_LOG_ROOT()) << #prefix ": " #name ": {" << i.first << " - " << i.second << "}"; \
         } \
-        SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << #prefix ": " #name " yaml :" << g_var->toString(); \
+        BIN_LOG_INFO(BIN_LOG_ROOT()) << #prefix ": " #name " yaml :" << g_var->toString(); \
     }
     XX(g_int_vec_value_config, int_vec, before);
     XX(g_int_list_value_config, int_list, before);
@@ -84,8 +84,8 @@ void test_config(){
     YAML::Node root = YAML::LoadFile("../bin/conf/test.yml" );
     bin::Config::LoadFromYaml(root);
     
-    SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "after:" << g_int_value_config->getValue();
-    SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "after:" << g_float_value_config->toString();
+    BIN_LOG_INFO(BIN_LOG_ROOT()) << "after:" << g_int_value_config->getValue();
+    BIN_LOG_INFO(BIN_LOG_ROOT()) << "after:" << g_float_value_config->toString();
 
     XX(g_int_vec_value_config, int_vec, after);
     XX(g_int_list_value_config, int_list, after);
@@ -168,22 +168,22 @@ bin::ConfigVar<std::map<std::string, std::vector<Person> > >::ptr g_person_vec_m
 void test_class(){
 
     std::cout << "-----Before:" << std::endl;
-    SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << " ---  " << g_person->getValue().toString() << " --- " << g_person->toString();
+    BIN_LOG_INFO(BIN_LOG_ROOT()) << " ---  " << g_person->getValue().toString() << " --- " << g_person->toString();
     
     //XX_PersonMap专用宏
     #define XX_PM(g_var, prefix){ \
         auto m = g_person_map->getValue(); \
         for(auto& i : m){ \
-            SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << prefix << ": " << i.first << " - " << i.second.toString(); \
+            BIN_LOG_INFO(BIN_LOG_ROOT()) << prefix << ": " << i.first << " - " << i.second.toString(); \
         } \
-        SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << prefix << ": size=" << m.size(); \
+        BIN_LOG_INFO(BIN_LOG_ROOT()) << prefix << ": size=" << m.size(); \
     }
     
-    //g_person->addListener(10, [] (const Person& old_value, const Person& new_value){SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "old_value=" << old_value.toString() << " new_value=" << new_value.toString();});
-    g_person->addListener([] (const Person& old_value, const Person& new_value){SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "old_value=" << old_value.toString() << " new_value=" << new_value.toString();});
+    //g_person->addListener(10, [] (const Person& old_value, const Person& new_value){BIN_LOG_INFO(BIN_LOG_ROOT()) << "old_value=" << old_value.toString() << " new_value=" << new_value.toString();});
+    g_person->addListener([] (const Person& old_value, const Person& new_value){BIN_LOG_INFO(BIN_LOG_ROOT()) << "old_value=" << old_value.toString() << " new_value=" << new_value.toString();});
 
     XX_PM(g_person_map, "class.map before");
-    SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "class.vec.map before:" << g_person_vec_map->toString();
+    BIN_LOG_INFO(BIN_LOG_ROOT()) << "class.vec.map before:" << g_person_vec_map->toString();
     
     std::cout << std::endl << "-----ReadFile:" << std::endl;
     YAML::Node root = YAML::LoadFile("../bin/conf/test.yml");
@@ -191,9 +191,9 @@ void test_class(){
     bin::Config::LoadFromYaml(root);
 
     std::cout << std::endl << "------After:" << std::endl;
-    SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << g_person->getValue().toString() << " - " << g_person->toString();
+    BIN_LOG_INFO(BIN_LOG_ROOT()) << g_person->getValue().toString() << " - " << g_person->toString();
     XX_PM(g_person_map, "class.map after");
-    SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "class.vec.map after:" << g_person_vec_map->toString();
+    BIN_LOG_INFO(BIN_LOG_ROOT()) << "class.vec.map after:" << g_person_vec_map->toString();
 }
 
 #endif
@@ -201,10 +201,10 @@ void test_class(){
 
 
 void test_log(){    
-    static bin::Logger::ptr system_log = SYLAR_LOG_NAME("system");
+    static bin::Logger::ptr system_log = BIN_LOG_NAME("system");
     ////查看system的 level 和 name
     // std::cout << "system level:" << bin::LogLevel::ToString(system_log->getLevel()) << ", system name:" << system_log->getName() << std::endl;
-    SYLAR_LOG_INFO(system_log) << "hello system";
+    BIN_LOG_INFO(system_log) << "hello system";
     std::cout << "before: " << std::endl << bin::LoggerMgr::GetInstance()->toYamlString() << std::endl;
     
     YAML::Node root = YAML::LoadFile("../bin/conf/log.yml");
@@ -214,10 +214,10 @@ void test_log(){
     std::cout << "After:" << std::endl << bin::LoggerMgr::GetInstance()->toYamlString() << std::endl;
     std::cout << "====================" << std::endl;
     std::cout << root << std::endl;
-    SYLAR_LOG_INFO(system_log) << "hello system";
+    BIN_LOG_INFO(system_log) << "hello system";
 
     system_log->setFormatter("%d - %m%n");
-    SYLAR_LOG_INFO(system_log) << "hello, system" << std::endl;
+    BIN_LOG_INFO(system_log) << "hello, system" << std::endl;
 }
 
 

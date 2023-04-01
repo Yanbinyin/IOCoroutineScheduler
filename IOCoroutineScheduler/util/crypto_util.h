@@ -6,8 +6,8 @@
  * @date 2019-07-02
  * @copyright Copyright (c) 2019年 bin.yin All rights reserved (www.bin.top)
  */
-#ifndef __SYLAR_UTIL_CRYPTO_UTIL_H__
-#define __SYLAR_UTIL_CRYPTO_UTIL_H__
+#ifndef __BIN_UTIL_CRYPTO_UTIL_H__
+#define __BIN_UTIL_CRYPTO_UTIL_H__
 
 #include <openssl/ssl.h>
 #include <openssl/evp.h>

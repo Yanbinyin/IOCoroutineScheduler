@@ -1,7 +1,7 @@
 #include "../IOCoroutineScheduler/bin.h"
 #include <assert.h>
 
-bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+bin::Logger::ptr g_logger = BIN_LOG_ROOT();
 
 /*
     assert宏的原型定义在<assert.h>中，其原型定义：
@@ -12,15 +12,15 @@ bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
     然后通过调用 abort 来终止程序运行。
 */
 void test_assert(){
-    // SYLAR_LOG_INFO(g_logger) << bin::BacktraceToString(10, 0, "  ");
-    SYLAR_LOG_INFO(g_logger) << bin::BacktraceToString(10);   //默认形参，skip = 2，跳两层，相比上面输出简洁清爽
+    // BIN_LOG_INFO(g_logger) << bin::BacktraceToString(10, 0, "  ");
+    BIN_LOG_INFO(g_logger) << bin::BacktraceToString(10);   //默认形参，skip = 2，跳两层，相比上面输出简洁清爽
     
     //测试单纯assert
     // assert(0);
     
     //测试封装的的assert
-    // SYLAR_ASSERT(false);
-    SYLAR_ASSERT2(0 == 1, "abcdef xx");
+    // BIN_ASSERT(false);
+    BIN_ASSERT2(0 == 1, "abcdef xx");
 }
 
 int main(){

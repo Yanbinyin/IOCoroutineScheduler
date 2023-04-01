@@ -2,7 +2,7 @@
 #include "IOCoroutineScheduler/iomanager.h"
 #include "IOCoroutineScheduler/log.h"
 
-bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+bin::Logger::ptr g_logger = BIN_LOG_ROOT();
 //test_tcp_server.cc 还有就是example里面的 echo_server
 void run(){
     auto addr = bin::Address::LookupAny("0.0.0.0:8033");

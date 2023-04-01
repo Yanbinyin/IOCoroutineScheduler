@@ -1,5 +1,5 @@
-#ifndef __SYLAR_STREAMS_SOCKET_STREAM_POOL_H__
-#define __SYLAR_STREAMS_SOCKET_STREAM_POOL_H__
+#ifndef __BIN_STREAMS_SOCKET_STREAM_POOL_H__
+#define __BIN_STREAMS_SOCKET_STREAM_POOL_H__
 
 #include "bin/streams/socket_stream.h"
 #include "bin/mutex.h"

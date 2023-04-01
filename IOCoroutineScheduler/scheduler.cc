@@ -6,15 +6,15 @@
 
 namespace bin {
 
-    static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+    static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
     static thread_local Scheduler* t_scheduler = nullptr;   //GetThis()在当前线程里面获取协程id，初始化协程调度器指针
     static thread_local Fiber* t_scheduler_fiber = nullptr; //GetMainFiber()
 
 
     Scheduler::Scheduler(size_t threads, bool use_caller, const std::string& name)
         :m_name(name){
-        SYLAR_LOG_DEBUG(g_logger) << "调度器构造: Scheduler " << name;
-        SYLAR_ASSERT(threads > 0);  //线程数量要 ≥ 1
+        BIN_LOG_DEBUG(g_logger) << "调度器构造: Scheduler " << name;
+        BIN_ASSERT(threads > 0);  //线程数量要 ≥ 1
 
         //当前线程作为调度线程使用
         if(use_caller){
@@ -22,7 +22,7 @@ namespace bin {
             --threads; //减1是因为当前的这个线程也会被纳入调度 少创建一个线程
 
             //这个断言防止重复创建调度器
-            SYLAR_ASSERT(GetThis() == nullptr);
+            BIN_ASSERT(GetThis() == nullptr);
             t_scheduler = this;
 
             //新创建的主协程会参与到协程调度中
@@ -42,11 +42,11 @@ namespace bin {
 
     Scheduler::~Scheduler(){
         //只有正在停止运行才能析构
-        SYLAR_ASSERT(m_stopping);
+        BIN_ASSERT(m_stopping);
         if(GetThis() == this){
             t_scheduler = nullptr;
         }
-        SYLAR_LOG_DEBUG(g_logger) << "调度器析构: ~Scheduler";
+        BIN_LOG_DEBUG(g_logger) << "调度器析构: ~Scheduler";
     }
 
 
@@ -60,7 +60,7 @@ namespace bin {
 
     //核心函数:开启Schuduler调度器的运行。根据传入的线程数，初始化其余子线程，将调度协程推送到CPU
     void Scheduler::start(){
-        SYLAR_LOG_INFO(g_logger) << "Scheduler::start()";
+        BIN_LOG_INFO(g_logger) << "Scheduler::start()";
         MutexType::Lock lock(m_mutex);
         //一开始 m_stopping = true
         //是运行状态，直接返回
@@ -69,11 +69,11 @@ namespace bin {
         
         //是停止状态，开始运行
         m_stopping = false;
-        SYLAR_ASSERT(m_threads.empty());
+        BIN_ASSERT(m_threads.empty());
 
         m_threads.resize(m_threadCount); 
         for(size_t i = 0; i < m_threadCount; ++i){
-            //SYLAR_LOG_INFO(g_logger) << "创建线程"; //power:开启线程
+            //BIN_LOG_INFO(g_logger) << "创建线程"; //power:开启线程
             //hack: 协程是Scheduler::run，线程还是Scheduler::run
             m_threads[i].reset(new Thread(std::bind(&Scheduler::run, this), m_name + "_" + std::to_string(i)));
             m_threadIds.push_back(m_threads[i]->getId());
@@ -83,14 +83,14 @@ namespace bin {
         //if(m_rootFiber){
         //    //m_rootFiber->swapIn();
         //    m_rootFiber->call();
-        //    SYLAR_LOG_INFO(g_logger) << "call out " << m_rootFiber->getState();
+        //    BIN_LOG_INFO(g_logger) << "call out " << m_rootFiber->getState();
         //}
     }
 
 
    //power:核心函数，调度器停止
     void Scheduler::stop(){
-        SYLAR_LOG_INFO(g_logger) << "Scheduler::stop()";
+        BIN_LOG_INFO(g_logger) << "Scheduler::stop()";
         /*
         *  用了use_caller的线程 必须在这个线程里去执行stop
         *  没有用use_caller的线程 可以任意在别的线程执行stop
@@ -102,7 +102,7 @@ namespace bin {
         if(m_rootFiber 
                 && m_threadCount == 0
                 && (m_rootFiber->getState() == Fiber::TERM || m_rootFiber->getState() == Fiber::INIT)){
-            SYLAR_LOG_INFO(g_logger) << this << " stopped";
+            BIN_LOG_INFO(g_logger) << this << " stopped";
             m_stopping = true;
 
             if(stopping())
@@ -116,22 +116,22 @@ namespace bin {
         //bool exit_on_this_fiber = false;
         if(m_rootThread != -1){
             //当前的执行器要把创建它的线程也使用的时候  它的stop一定要在创建线程中执行
-            SYLAR_ASSERT(GetThis() == this);
+            BIN_ASSERT(GetThis() == this);
         }else{
-            SYLAR_ASSERT(GetThis() != this);
+            BIN_ASSERT(GetThis() != this);
         }
         
         //其他线程根据这个标志位退出运行
         m_stopping = true;
         //唤醒其他线程结束
         for(size_t i = 0; i < m_threadCount; ++i){
-            SYLAR_LOG_INFO(g_logger) << "唤醒其他线程: " << i;
+            BIN_LOG_INFO(g_logger) << "唤醒其他线程: " << i;
             tickle();
         }
 
         //最后让主线程也退出
         if(m_rootFiber){
-            SYLAR_LOG_INFO(g_logger) << "唤醒主线程";
+            BIN_LOG_INFO(g_logger) << "唤醒主线程";
             tickle();
         }
 
@@ -140,13 +140,13 @@ namespace bin {
             //    if(m_rootFiber->getState() == Fiber::TERM
             //            || m_rootFiber->getState() == Fiber::EXCEPT){
             //        m_rootFiber.reset(new Fiber(std::bind(&Scheduler::run, this), 0, true));
-            //        SYLAR_LOG_INFO(g_logger) << " root fiber is term, reset";
+            //        BIN_LOG_INFO(g_logger) << " root fiber is term, reset";
             //        t_fiber = m_rootFiber.get();
             //    }
             //    m_rootFiber->call();
             //}
             if(!stopping()){
-                SYLAR_LOG_INFO(g_logger) << "call";
+                BIN_LOG_INFO(g_logger) << "call";
                 m_rootFiber->call();
             }
         }
@@ -174,7 +174,7 @@ namespace bin {
         功能：负责协程调度和线程管理，从任务队列拿出任务，执行对应的任务。
     */
     void Scheduler::run(){
-        SYLAR_LOG_DEBUG(g_logger)<< "Scheduler::run() begin";
+        BIN_LOG_DEBUG(g_logger)<< "Scheduler::run() begin";
         
         set_hook_enable(true);
         
@@ -224,7 +224,7 @@ namespace bin {
                         continue;
                     }
 
-                    SYLAR_ASSERT(it->fiber || it->cb); //fiber 和 回调函数至少有一个
+                    BIN_ASSERT(it->fiber || it->cb); //fiber 和 回调函数至少有一个
                     //fiber正在执行状态，也不需要处理
                     if(it->fiber && it->fiber->getState() == Fiber::EXEC){
                         ++it;
@@ -249,7 +249,7 @@ namespace bin {
             //a. 如果要执行的任务是协程
             //契合当前线程的协程还没执行完毕
             if(ft.fiber && (ft.fiber->getState() != Fiber::TERM && ft.fiber->getState() != Fiber::EXCEPT)){
-                SYLAR_LOG_INFO(g_logger) <<  "待执行对象: fiber, id = " <<  ft.fiber->getId();
+                BIN_LOG_INFO(g_logger) <<  "待执行对象: fiber, id = " <<  ft.fiber->getId();
                 ft.fiber->swapIn(); //让它执行，执行完做处理
                 --m_activeThreadCount;
 
@@ -264,7 +264,7 @@ namespace bin {
             }
             //b. 如果要执行的任务是函数
             else if(ft.cb){
-                SYLAR_LOG_INFO(g_logger) << "待执行对象: cb";
+                BIN_LOG_INFO(g_logger) << "待执行对象: cb";
                 if(cb_fiber){ //协程体的指针不为空就继续利用现有空间
                     cb_fiber->reset(ft.cb); //power: 执行Fiber的reset()函数，上下文切换。重置协程函数，并重置状态
                 }else{ //为空就重新开辟
@@ -287,7 +287,7 @@ namespace bin {
                 }
             }
             else{ //c.没有任务需要执行  去执行idle() --->代表空转 然后设置为hold状态
-                //SYLAR_LOG_INFO(g_logger) << "无任务执行，空转: idle() " <<  is_active << " " 
+                //BIN_LOG_INFO(g_logger) << "无任务执行，空转: idle() " <<  is_active << " " 
                 //                         << m_activeThreadCount << " " << idle_fiber->getState();
                 if(is_active){
                     --m_activeThreadCount;
@@ -296,7 +296,7 @@ namespace bin {
 
                 //负责idle()的协程结束了 说明当前线程也结束了直接break
                 if(idle_fiber->getState() == Fiber::TERM){
-                    SYLAR_LOG_INFO(g_logger) << "idle fiber term";
+                    BIN_LOG_INFO(g_logger) << "idle fiber term";
                     break;
                 }
 
@@ -317,7 +317,7 @@ namespace bin {
     ● run()在轮询任务队列的时候，发现有任务不属于自己执行，并且也没有指定任何线程执行的时候要调用tickle()去唤醒线程执行这些任务
     ● stop()准备关闭调度器时候，要把所有创建的线程唤醒，去让他们退出*/
     void Scheduler::tickle(){
-        SYLAR_LOG_INFO(g_logger) << "tickle";
+        BIN_LOG_INFO(g_logger) << "tickle";
     }
 
     bool Scheduler::stopping(){
@@ -326,14 +326,14 @@ namespace bin {
     }
 
     void Scheduler::idle(){
-        SYLAR_LOG_INFO(g_logger) << "idle";
+        BIN_LOG_INFO(g_logger) << "idle";
         while(!stopping()){
             bin::Fiber::YieldToHold();
         }
     }
 
     void Scheduler::switchTo(int thread){
-        SYLAR_ASSERT(Scheduler::GetThis() != nullptr);
+        BIN_ASSERT(Scheduler::GetThis() != nullptr);
         if(Scheduler::GetThis() == this){
             if(thread == -1 || thread == bin::GetThreadId()){
                 return;

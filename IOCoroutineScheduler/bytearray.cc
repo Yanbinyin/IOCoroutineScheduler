@@ -9,7 +9,7 @@
 
 namespace bin{
 
-    static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+    static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
 
     ByteArray::Node::Node(size_t s)
@@ -37,7 +37,7 @@ namespace bin{
         ,m_position(0)
         ,m_capacity(base_size)
         ,m_size(0)
-        ,m_endian(SYLAR_BIG_ENDIAN)
+        ,m_endian(BIN_BIG_ENDIAN)
         ,m_root(new Node(base_size))
         ,m_cur(m_root){
     }
@@ -95,14 +95,14 @@ namespace bin{
 
     //操作大小端
     bool ByteArray::isLittleEndian() const{
-        return m_endian == SYLAR_LITTLE_ENDIAN;
+        return m_endian == BIN_LITTLE_ENDIAN;
     }
 
     void ByteArray::setIsLittleEndian(bool val){
         if(val){
-            m_endian = SYLAR_LITTLE_ENDIAN;
+            m_endian = BIN_LITTLE_ENDIAN;
         }else{
-            m_endian = SYLAR_BIG_ENDIAN;
+            m_endian = BIN_BIG_ENDIAN;
         }
     }
 
@@ -119,14 +119,14 @@ namespace bin{
 
     void ByteArray::writeFint16 (int16_t value){
         //当前字节序和本机字节序不符 需要swap
-        if(m_endian != SYLAR_BYTE_ORDER)
+        if(m_endian != BIN_BYTE_ORDER)
             value = byteswap(value);
         write(&value, sizeof(value));
     }
 
     void ByteArray::writeFuint16(uint16_t value){
         //当前字节序和本机字节序不符 需要swap
-        if(m_endian != SYLAR_BYTE_ORDER){
+        if(m_endian != BIN_BYTE_ORDER){
             value = byteswap(value);
         }
         write(&value, sizeof(value));
@@ -134,28 +134,28 @@ namespace bin{
 
     void ByteArray::writeFint32 (int32_t value){
         //当前字节序和本机字节序不符 需要swap
-        if(m_endian != SYLAR_BYTE_ORDER)
+        if(m_endian != BIN_BYTE_ORDER)
             value = byteswap(value);
         write(&value, sizeof(value));
     }
 
     void ByteArray::writeFuint32(uint32_t value){
         //当前字节序和本机字节序不符 需要swap
-        if(m_endian != SYLAR_BYTE_ORDER)
+        if(m_endian != BIN_BYTE_ORDER)
             value = byteswap(value);
         write(&value, sizeof(value));
     }
 
     void ByteArray::writeFint64 (int64_t value){
         //当前字节序和本机字节序不符 需要swap
-        if(m_endian != SYLAR_BYTE_ORDER)
+        if(m_endian != BIN_BYTE_ORDER)
             value = byteswap(value);
         write(&value, sizeof(value));
     }
 
     void ByteArray::writeFuint64(uint64_t value){
         //当前字节序和本机字节序不符 需要swap
-        if(m_endian != SYLAR_BYTE_ORDER)
+        if(m_endian != BIN_BYTE_ORDER)
             value = byteswap(value);
         write(&value, sizeof(value));
     }
@@ -251,7 +251,7 @@ namespace bin{
     #define XX(type) \
         type v; \
         read(&v, sizeof(v)); \
-        if(m_endian == SYLAR_BYTE_ORDER){ /*检测字节序是大端还是小端*/\
+        if(m_endian == BIN_BYTE_ORDER){ /*检测字节序是大端还是小端*/\
             return v; \
         }else{ \
             return byteswap(v); \
@@ -505,7 +505,7 @@ namespace bin{
         std::ofstream ofs;
         ofs.open(name, std::ios::trunc | std::ios::binary);
         if(!ofs){
-            SYLAR_LOG_ERROR(g_logger) << "writeToFile name=" << name
+            BIN_LOG_ERROR(g_logger) << "writeToFile name=" << name
                 << " error , errno=" << errno << " errstr=" << strerror(errno);
             return false;
         }
@@ -530,7 +530,7 @@ namespace bin{
         std::ifstream ifs;
         ifs.open(name, std::ios::binary);   //以二进制打开
         if(!ifs){
-            SYLAR_LOG_ERROR(g_logger) << "readFromFile name=" << name << " error, errno=" << errno << " errstr=" << strerror(errno);
+            BIN_LOG_ERROR(g_logger) << "readFromFile name=" << name << " error, errno=" << errno << " errstr=" << strerror(errno);
             return false;
         }
 

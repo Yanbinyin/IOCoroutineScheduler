@@ -10,7 +10,7 @@
 
 namespace bin {
 
-    static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+    static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
 
 //hack: 结构体的作用？？？ 重载 << >>？？？
@@ -70,7 +70,7 @@ namespace bin {
             case IOManager::WRITE:
                 return write;
             default:
-                SYLAR_ASSERT2(false, "getContext");
+                BIN_ASSERT2(false, "getContext");
         }
         //逻辑错误，无效的参数
         throw std::invalid_argument("getContext invalid event");
@@ -83,11 +83,11 @@ namespace bin {
     }
 
     void IOManager::FdContext::triggerEvent(IOManager::Event event){
-        //SYLAR_LOG_INFO(g_logger) << "fd=" << fd
+        //BIN_LOG_INFO(g_logger) << "fd=" << fd
         //    << " triggerEvent event=" << event
         //    << " events=" << events;
-        SYLAR_ASSERT(events & event);	//当前事件中必须包含要触发的事件
-        //if(SYLAR_UNLIKELY(!(event & event))) return;
+        BIN_ASSERT(events & event);	//当前事件中必须包含要触发的事件
+        //if(BIN_UNLIKELY(!(event & event))) return;
         events = (Event)(events & ~event);//把触发后的事件去除掉
         EventContext& ctx = getContext(event);
         if(ctx.cb)
@@ -109,15 +109,15 @@ namespace bin {
 
     IOManager::IOManager(size_t threads_size, bool use_caller, const std::string& name)
         	:Scheduler(threads_size, use_caller, name){ //power:初始化了scheduler()
-	    SYLAR_LOG_DEBUG(g_logger) << "IO调度器构造: IOManager";
+	    BIN_LOG_DEBUG(g_logger) << "IO调度器构造: IOManager";
         
         //创建epoll句柄
         m_epfd = epoll_create(5000);
-        SYLAR_ASSERT(m_epfd > 0);
+        BIN_ASSERT(m_epfd > 0);
 
         //创建管道句柄 m_tickleFds[0]读管道，1为写管道
         int rt = pipe(m_tickleFds);  //rt = 0：success 
-        SYLAR_ASSERT(!rt);
+        BIN_ASSERT(!rt);
 
         //初始化epoll事件
         epoll_event event;
@@ -129,11 +129,11 @@ namespace bin {
 
         //设置读管道句柄属性 将读fd 设置为非阻塞
         rt = fcntl(m_tickleFds[0], F_SETFL, O_NONBLOCK);
-        SYLAR_ASSERT(!rt);
+        BIN_ASSERT(!rt);
 
         //将当前的事件添加到epoll中
         rt = epoll_ctl(m_epfd, EPOLL_CTL_ADD, m_tickleFds[0], &event);
-        SYLAR_ASSERT(!rt);
+        BIN_ASSERT(!rt);
         
         contextResize(32);  //默认为个事件信息
         
@@ -153,7 +153,7 @@ namespace bin {
                 delete m_fdContexts[i];
             }
         }
-        SYLAR_LOG_DEBUG(g_logger) << "IO调度器析构: ~IOManager";
+        BIN_LOG_DEBUG(g_logger) << "IO调度器析构: ~IOManager";
     }
 
 
@@ -170,7 +170,7 @@ namespace bin {
         }else{//事件对象扩容
             lock.unlock();
             RWMutexType::WriteLock lock2(m_mutex);
-            SYLAR_LOG_INFO(g_logger) << "fd不存在并扩容,fd=" << fd;
+            BIN_LOG_INFO(g_logger) << "fd不存在并扩容,fd=" << fd;
             contextResize(fd * 1.5);
             fd_ctx = m_fdContexts[fd];
         }
@@ -178,11 +178,11 @@ namespace bin {
         FdContext::MutexType::Lock lock2(fd_ctx->mutex);
         //一般情况下，一个句柄不会往上面加相同的事件，之前的事件和要添加的事件是同一种类型的事件
         //说明至少有两个不同的线程在操纵同一个句柄的同一个方法
-        if(SYLAR_UNLIKELY(fd_ctx->events & event)){
-            SYLAR_LOG_ERROR(g_logger) << "addEvent assert fd=" << fd
+        if(BIN_UNLIKELY(fd_ctx->events & event)){
+            BIN_LOG_ERROR(g_logger) << "addEvent assert fd=" << fd
                         << " event=" << (EPOLL_EVENTS)event
                         << " fd_ctx.event=" << (EPOLL_EVENTS)fd_ctx->events;
-            SYLAR_ASSERT(!(fd_ctx->events & event));
+            BIN_ASSERT(!(fd_ctx->events & event));
         }
 
         int op = fd_ctx->events ? EPOLL_CTL_MOD : EPOLL_CTL_ADD; //判断事件修改还是新增
@@ -193,7 +193,7 @@ namespace bin {
 
         int rt = epoll_ctl(m_epfd, op, fd, &ev); //将事件添加/修改到epoll，成功返回0
         if(rt){ 
-            SYLAR_LOG_ERROR(g_logger) << "epoll_ctl(" << m_epfd << ", "
+            BIN_LOG_ERROR(g_logger) << "epoll_ctl(" << m_epfd << ", "
                 << (EpollCtlOp)op << ", " << fd << ", " << (EPOLL_EVENTS)ev.events << "):"
                 << rt << " (" << errno << ") (" << strerror(errno) << ") fd_ctx->events="
                 << (EPOLL_EVENTS)fd_ctx->events;
@@ -206,7 +206,7 @@ namespace bin {
         //构建对应的添加的读/写 事件对象 设置相关信息
         //要加 读事件就返回 read_event;要加写事件 就返回write_event
         FdContext::EventContext& event_ctx = fd_ctx->getContext(event);
-        SYLAR_ASSERT(!event_ctx.scheduler && !event_ctx.fiber && !event_ctx.cb); //都要是空的，有值说明有事件
+        BIN_ASSERT(!event_ctx.scheduler && !event_ctx.fiber && !event_ctx.cb); //都要是空的，有值说明有事件
 
         event_ctx.scheduler = Scheduler::GetThis(); //power:设置调度器
         
@@ -215,7 +215,7 @@ namespace bin {
         }else{ //没有设置回调  下一次就继续执行当前协程
             event_ctx.fiber = Fiber::GetThis();
             //给事件对象绑定协程时候 协程应该是运行的
-            SYLAR_ASSERT2(event_ctx.fiber->getState() == Fiber::EXEC
+            BIN_ASSERT2(event_ctx.fiber->getState() == Fiber::EXEC
                         ,"state=" << event_ctx.fiber->getState());
         }
         return 0;
@@ -234,7 +234,7 @@ namespace bin {
 
         FdContext::MutexType::Lock lock2(fd_ctx->mutex);
         //2、句柄对象存在，但是句柄上没有对应事件 不用删除
-        if(SYLAR_UNLIKELY(!(fd_ctx->events & event)))
+        if(BIN_UNLIKELY(!(fd_ctx->events & event)))
             return false;        
 
         //3、去掉事件：取反运算 + 与运算 就是去掉该事件event
@@ -249,7 +249,7 @@ namespace bin {
         //将事件ev添加/修改到epoll
         int rt = epoll_ctl(m_epfd, op, fd, &ev);
         if(rt){
-            SYLAR_LOG_ERROR(g_logger) << "epoll_ctl(" << m_epfd << ", "
+            BIN_LOG_ERROR(g_logger) << "epoll_ctl(" << m_epfd << ", "
                 << (EpollCtlOp)op << ", " << fd << ", " << (EPOLL_EVENTS)ev.events << "):"
                 << rt << " (" << errno << ") (" << strerror(errno) << ")";
             return false;
@@ -279,7 +279,7 @@ namespace bin {
 
         FdContext::MutexType::Lock lock2(fd_ctx->mutex);
         //2、句柄对象存在，但是句柄上没有对应事件
-        if(SYLAR_UNLIKELY(!(fd_ctx->events & event)))
+        if(BIN_UNLIKELY(!(fd_ctx->events & event)))
             return false;
 
         //3、去掉事件：取反运算 + 与运算 就是去掉该事件event
@@ -294,7 +294,7 @@ namespace bin {
         //将事件ev添加/修改到epoll
         int rt = epoll_ctl(m_epfd, op, fd, &epevent);
         if(rt){
-            SYLAR_LOG_ERROR(g_logger) << "epoll_ctl(" << m_epfd << ", "
+            BIN_LOG_ERROR(g_logger) << "epoll_ctl(" << m_epfd << ", "
                 << (EpollCtlOp)op << ", " << fd << ", " << (EPOLL_EVENTS)epevent.events << "):"
                 << rt << " (" << errno << ") (" << strerror(errno) << ")";
             return false;
@@ -330,7 +330,7 @@ namespace bin {
         //将事件删除到epoll
         int rt = epoll_ctl(m_epfd, op, fd, &ev);
         if(rt){
-            SYLAR_LOG_ERROR(g_logger) << "epoll_ctl(" << m_epfd << ", "
+            BIN_LOG_ERROR(g_logger) << "epoll_ctl(" << m_epfd << ", "
                 << (EpollCtlOp)op << ", " << fd << ", " << (EPOLL_EVENTS)ev.events << "):"
                 << rt << " (" << errno << ") (" << strerror(errno) << ")";
             return false;
@@ -345,7 +345,7 @@ namespace bin {
             --m_pendingEventCount;
         }
 
-        SYLAR_ASSERT(fd_ctx->events == 0); //句柄对象上的注册事件应该为NONE = 0
+        BIN_ASSERT(fd_ctx->events == 0); //句柄对象上的注册事件应该为NONE = 0
         return true;
     }
 
@@ -367,12 +367,12 @@ namespace bin {
         ● stop()准备关闭调度器时候，要把所有创建的线程唤醒，去让他们退出
     */
     void IOManager::tickle(){
-        SYLAR_LOG_INFO(g_logger) << "tickle()";
+        BIN_LOG_INFO(g_logger) << "tickle()";
         if(!hasIdleThreads()){
             return;
         }
         int rt = write(m_tickleFds[1], "T", 1); //写1个 T 进去
-        SYLAR_ASSERT(rt == 1);
+        BIN_ASSERT(rt == 1);
     }
 
     bool IOManager::stopping(){//没给缺省参数值，因为这个override了基类函数
@@ -397,7 +397,7 @@ namespace bin {
     }
     */
     void IOManager::idle(){
-        SYLAR_LOG_DEBUG(g_logger) << "IOManager::idle()";
+        BIN_LOG_DEBUG(g_logger) << "IOManager::idle()";
         const uint64_t MAX_EVNETS = 256;
         epoll_event* evts = new epoll_event[MAX_EVNETS]();  //256个一组 取出已经就绪的IO
 
@@ -408,8 +408,8 @@ namespace bin {
             uint64_t next_timeout = 0;
 
             //1.如果调度器关闭了 就退出该函数
-            if(SYLAR_UNLIKELY(stopping(next_timeout))){
-                SYLAR_LOG_INFO(g_logger) << "name=" << getName() << ", idle stopping exit";
+            if(BIN_UNLIKELY(stopping(next_timeout))){
+                BIN_LOG_INFO(g_logger) << "name=" << getName() << ", idle stopping exit";
                 break;
             }
 
@@ -434,13 +434,13 @@ namespace bin {
             std::vector<std::function<void()> > cbs;
             listExpiredCb(cbs);
             if(!cbs.empty()){
-                //SYLAR_LOG_DEBUG(g_logger) << "on timer cbs.size=" << cbs.size();
+                //BIN_LOG_DEBUG(g_logger) << "on timer cbs.size=" << cbs.size();
                 schedule(cbs.begin(), cbs.end());
                 cbs.clear();
             }
 
-            //if(SYLAR_UNLIKELY(rt == MAX_EVNETS)){
-            //    SYLAR_LOG_INFO(g_logger) << "epoll wait events=" << rt;
+            //if(BIN_UNLIKELY(rt == MAX_EVNETS)){
+            //    BIN_LOG_INFO(g_logger) << "epoll wait events=" << rt;
             //}
 
             //3.依次处理已经就绪的IO
@@ -464,7 +464,7 @@ namespace bin {
 
                 //如果是错误或者中断 导致的活动  重置一下
                 if(ev.events & (EPOLLERR | EPOLLHUP)){
-                    SYLAR_LOG_INFO(g_logger) << "EPOLLERR | EPOLLHUP";
+                    BIN_LOG_INFO(g_logger) << "EPOLLERR | EPOLLHUP";
                     ev.events |= (EPOLLIN | EPOLLOUT) & fd_ctx->events;
                 }
 
@@ -490,23 +490,23 @@ namespace bin {
 
                 int rt2 = epoll_ctl(m_epfd, op, fd_ctx->fd, &ev);
                 if(rt2){
-                    SYLAR_LOG_ERROR(g_logger) << "epoll_ctl(" << m_epfd << ", "
+                    BIN_LOG_ERROR(g_logger) << "epoll_ctl(" << m_epfd << ", "
                         << (EpollCtlOp)op << ", " << fd_ctx->fd << ", " << (EPOLL_EVENTS)ev.events << "):"
                         << rt2 << " (" << errno << ") (" << strerror(errno) << ")";
                     continue;
                 }
 
-                //SYLAR_LOG_INFO(g_logger) << " fd=" << fd_ctx->fd << " events=" << fd_ctx->events
+                //BIN_LOG_INFO(g_logger) << " fd=" << fd_ctx->fd << " events=" << fd_ctx->events
                 //                         << " real_events=" << real_events;
                 
                 //把剩余没有触发的读写事件 主动触发
                 if(real_events & READ){
-                    SYLAR_LOG_INFO(g_logger) << "idle 读事件触发";
+                    BIN_LOG_INFO(g_logger) << "idle 读事件触发";
                     fd_ctx->triggerEvent(READ);
                     --m_pendingEventCount;
                 }
                 if(real_events & WRITE){
-                    SYLAR_LOG_INFO(g_logger) << "idle 写事件触发";
+                    BIN_LOG_INFO(g_logger) << "idle 写事件触发";
                     fd_ctx->triggerEvent(WRITE);
                     --m_pendingEventCount;
                 }

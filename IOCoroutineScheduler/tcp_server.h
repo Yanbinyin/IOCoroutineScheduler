@@ -1,7 +1,7 @@
 //CP服务器的封装
 
-#ifndef __SYLAR_TCP_SERVER_H__
-#define __SYLAR_TCP_SERVER_H__
+#ifndef __BIN_TCP_SERVER_H__
+#define __BIN_TCP_SERVER_H__
 
 #include <memory>
 #include <functional>

@@ -1,16 +1,16 @@
 #include "../IOCoroutineScheduler/bin.h"
 
-bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
-// static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+bin::Logger::ptr g_logger = BIN_LOG_ROOT();
+// static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
 //run_in_fiber()函数，所有测试main函数都要用
 void run_in_fiber(){
     // printPostfix("run_in_fiber begin:");
-    SYLAR_LOG_INFO(g_logger) << "run_in_fiber begin";
+    BIN_LOG_INFO(g_logger) << "run_in_fiber begin";
     bin::Fiber::YieldToHold();
-    SYLAR_LOG_INFO(g_logger) << "run_in_fiber back";
+    BIN_LOG_INFO(g_logger) << "run_in_fiber back";
     bin::Fiber::YieldToHold();
-    SYLAR_LOG_INFO(g_logger) << "run_in_fiber end";
+    BIN_LOG_INFO(g_logger) << "run_in_fiber end";
 }
 
 
@@ -20,7 +20,7 @@ void run_in_fiber(){
 int main(){
     bin::Thread::SetName("mainThread");
     bin::Fiber::GetThis();
-    SYLAR_LOG_INFO(g_logger) << "main begin";
+    BIN_LOG_INFO(g_logger) << "main begin";
 
     bin::Fiber::ptr fiber(new bin::Fiber(run_in_fiber));
 
@@ -29,12 +29,12 @@ int main(){
     printLine();
 
     fiber->swapIn();
-    SYLAR_LOG_INFO(g_logger) << "main after swapIn";
+    BIN_LOG_INFO(g_logger) << "main after swapIn";
 
     printLine();
 
     fiber->swapIn();
-    SYLAR_LOG_INFO(g_logger) << "main after end";
+    BIN_LOG_INFO(g_logger) << "main after end";
 
     return 0;
 }
@@ -44,24 +44,24 @@ int main(){
 //block2：协程构造数量 = 析构数量
 #if 1
 int main(){
-    SYLAR_LOG_INFO(g_logger) << "main begin -1";
+    BIN_LOG_INFO(g_logger) << "main begin -1";
     {
         bin::Fiber::GetThis();
-        SYLAR_LOG_INFO(g_logger) << "main begin";
+        BIN_LOG_INFO(g_logger) << "main begin";
         bin::Fiber::ptr fiber(new bin::Fiber(run_in_fiber));
 
         printLine();
         fiber->swapIn();
-        SYLAR_LOG_INFO(g_logger) << "main after swapIn";
+        BIN_LOG_INFO(g_logger) << "main after swapIn";
 
         printLine();
         fiber->swapIn();
-        SYLAR_LOG_INFO(g_logger) << "main after end";
+        BIN_LOG_INFO(g_logger) << "main after end";
 
         printLine();
         fiber->swapIn();
     }
-    SYLAR_LOG_INFO(g_logger) << "main after end2";
+    BIN_LOG_INFO(g_logger) << "main after end2";
 
     return 0;
 }
@@ -71,25 +71,25 @@ int main(){
 //block3：多线程下协程的切换： 协程构造数量 = 析构数量
 #if 0
 void test_fiber(){
-    SYLAR_LOG_INFO(g_logger) << "main begin -1";
+    BIN_LOG_INFO(g_logger) << "main begin -1";
     {
         bin::Fiber::GetThis();
-        SYLAR_LOG_INFO(g_logger) << "main fiber begin";
+        BIN_LOG_INFO(g_logger) << "main fiber begin";
         bin::Fiber::ptr fiber(new bin::Fiber(run_in_fiber));
 
         int i = 0;
-        SYLAR_LOG_INFO(g_logger) << "fiber begin swapIn"  << std::to_string(++i);
+        BIN_LOG_INFO(g_logger) << "fiber begin swapIn"  << std::to_string(++i);
         fiber->swapIn();
-        //SYLAR_LOG_INFO(g_logger) << "fiber after swapIn";
+        //BIN_LOG_INFO(g_logger) << "fiber after swapIn";
 
-        SYLAR_LOG_INFO(g_logger) << "fiber begin swapIn"  << std::to_string(++i);
+        BIN_LOG_INFO(g_logger) << "fiber begin swapIn"  << std::to_string(++i);
         fiber->swapIn();
-        //SYLAR_LOG_INFO(g_logger) << "fiber after end";
+        //BIN_LOG_INFO(g_logger) << "fiber after end";
 
-        SYLAR_LOG_INFO(g_logger) << "fiber begin swapIn"  << std::to_string(++i);
+        BIN_LOG_INFO(g_logger) << "fiber begin swapIn"  << std::to_string(++i);
         fiber->swapIn();
     }
-    SYLAR_LOG_INFO(g_logger) << "main after end2";
+    BIN_LOG_INFO(g_logger) << "main after end2";
 }
 
 int main(){

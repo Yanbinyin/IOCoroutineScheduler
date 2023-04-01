@@ -9,7 +9,7 @@
 
 namespace bin {
 
-    static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+    static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
     //block: 辅助函数
     //生成一个只有主机号的掩码，即：取反后的子网掩码 bits：掩码的位数
@@ -105,7 +105,7 @@ namespace bin {
         //4.调用API获取域名上的网络通信地址
         int error = getaddrinfo(node.c_str(), service, &hints, &results); //libfunc:
         if(error){
-            SYLAR_LOG_DEBUG(g_logger) << "Address::Lookup getaddress(" << host << ", "
+            BIN_LOG_DEBUG(g_logger) << "Address::Lookup getaddress(" << host << ", "
                 << family << ", " << type << ") err=" << error << " errstr="
                 << gai_strerror(error);
             return false;
@@ -115,7 +115,7 @@ namespace bin {
         next = results;
         while(next){
             result.push_back(Create(next->ai_addr,(socklen_t)next->ai_addrlen));
-            //SYLAR_LOG_INFO(g_logger) <<((sockaddr_in*)next->ai_addr)->sin_addr.s_addr;
+            //BIN_LOG_INFO(g_logger) <<((sockaddr_in*)next->ai_addr)->sin_addr.s_addr;
             next = next->ai_next;
         }
 
@@ -152,7 +152,7 @@ namespace bin {
         struct ifaddrs *next, *results;
         int ret = getifaddrs(&results); //libfunc:
         if(ret != 0){
-            SYLAR_LOG_DEBUG(g_logger) << "Address::GetInterfaceAddresses getifaddrs," //power: std::cout << "str1" "str2"; 中间没有<<
+            BIN_LOG_DEBUG(g_logger) << "Address::GetInterfaceAddresses getifaddrs," //power: std::cout << "str1" "str2"; 中间没有<<
                     " err=" << errno << " errstr=" << strerror(errno);
             return false;
         }
@@ -192,7 +192,7 @@ namespace bin {
                 }
             }
         }catch(...){
-            SYLAR_LOG_ERROR(g_logger) << "Address::GetInterfaceAddresses exception";
+            BIN_LOG_ERROR(g_logger) << "Address::GetInterfaceAddresses exception";
             freeifaddrs(results);
             return false;
         }
@@ -273,7 +273,7 @@ namespace bin {
 
         int error = getaddrinfo(address, NULL, &hints, &results);
         if(error){
-            SYLAR_LOG_DEBUG(g_logger) << "IPAddress::Create(" << address
+            BIN_LOG_DEBUG(g_logger) << "IPAddress::Create(" << address
                 << ", " << port << ") error=" << error
                 << " errno=" << errno << " errstr=" << strerror(errno);
             return nullptr;
@@ -308,7 +308,7 @@ namespace bin {
         The af argument must be either AF_INET or AF_INET6.  dst is written in network byte order.
         */
         if(result <= 0){
-            SYLAR_LOG_DEBUG(g_logger) << "IPv4Address::Create(" << address << ", "
+            BIN_LOG_DEBUG(g_logger) << "IPv4Address::Create(" << address << ", "
                     << port << ") rt=" << result << " errno=" << errno
                     << " errstr=" << strerror(errno);
             return nullptr;
@@ -395,7 +395,7 @@ namespace bin {
         rt->m_addr.sin6_port = byteswapOnLittleEndian(port);
         int result = inet_pton(AF_INET6, address, &rt->m_addr.sin6_addr);
         if(result <= 0){
-            SYLAR_LOG_DEBUG(g_logger) << "IPv6Address::Create(" << address << ", "
+            BIN_LOG_DEBUG(g_logger) << "IPv6Address::Create(" << address << ", "
                     << port << ") rt=" << result << " errno=" << errno
                     << " errstr=" << strerror(errno);
             return nullptr;

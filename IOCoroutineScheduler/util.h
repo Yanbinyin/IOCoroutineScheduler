@@ -1,5 +1,5 @@
-#ifndef __SYLAR_UTIL_H__
-#define __SYLAR_UTIL_H__
+#ifndef __BIN_UTIL_H__
+#define __BIN_UTIL_H__
 
 #include <cxxabi.h>
 #include <pthread.h>

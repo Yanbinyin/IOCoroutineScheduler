@@ -1,6 +1,6 @@
 //二进制数组(序列化/反序列化)
-#ifndef __SYLAR_BYTEARRAY_H__
-#define __SYLAR_BYTEARRAY_H__
+#ifndef __BIN_BYTEARRAY_H__
+#define __BIN_BYTEARRAY_H__
 
 #include <memory>
 #include <string>

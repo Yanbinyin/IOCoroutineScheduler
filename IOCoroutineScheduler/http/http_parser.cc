@@ -6,7 +6,7 @@
 namespace bin::http {
 //namespace http {
 
-    static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+    static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
     //block: 配置项
     //配置项 规定一个请求报文首部字段数据长度阈值默认4KB  来规避大数据发包攻击
@@ -92,7 +92,7 @@ namespace bin::http {
         HttpMethod m = CharsToHttpMethod(at);
 
         if(m == HttpMethod::INVALID_METHOD){
-            SYLAR_LOG_WARN(g_logger) << "invalid http request method: " << std::string(at, length);
+            BIN_LOG_WARN(g_logger) << "invalid http request method: " << std::string(at, length);
             parser->setError(1000);
             return;
         }
@@ -105,7 +105,7 @@ namespace bin::http {
 
     //解析分段标识符回调函数
     void on_request_fragment(void *data, const char *at, size_t length){
-        //SYLAR_LOG_INFO(g_logger) << "on_request_fragment:" << std::string(at, length);
+        //BIN_LOG_INFO(g_logger) << "on_request_fragment:" << std::string(at, length);
         HttpRequestParser* parser = static_cast<HttpRequestParser*>(data); //拿到this指针
         parser->getData()->setFragment(std::string(at, length));
     }
@@ -131,7 +131,7 @@ namespace bin::http {
         } else if(strncmp(at, "HTTP/1.0", length) == 0){
             v = 0x10;
         }else{
-            SYLAR_LOG_WARN(g_logger) << "invalid http request version: "
+            BIN_LOG_WARN(g_logger) << "invalid http request version: "
                 << std::string(at, length);
             parser->setError(1001);
             return;
@@ -147,7 +147,7 @@ namespace bin::http {
     void on_request_http_field(void *data, const char *field, size_t flen, const char *value, size_t vlen){
         HttpRequestParser* parser = static_cast<HttpRequestParser*>(data); //拿到this指针
         if(flen == 0){
-            SYLAR_LOG_WARN(g_logger) << "invalid http request field length == 0";
+            BIN_LOG_WARN(g_logger) << "invalid http request field length == 0";
             //parser->setError(1002); //invalid field
             return;
         }
@@ -232,7 +232,7 @@ namespace bin::http {
         } else if(strncmp(at, "HTTP/1.0", length) == 0){
             v = 0x10;
         }else{
-            SYLAR_LOG_WARN(g_logger) << "invalid http response version: "
+            BIN_LOG_WARN(g_logger) << "invalid http response version: "
                 << std::string(at, length);
             parser->setError(1001);
             return;
@@ -252,7 +252,7 @@ namespace bin::http {
                             ,const char *value, size_t vlen){
         HttpResponseParser* parser = static_cast<HttpResponseParser*>(data);
         if(flen == 0){
-            SYLAR_LOG_WARN(g_logger) << "invalid http response field length == 0";
+            BIN_LOG_WARN(g_logger) << "invalid http response field length == 0";
             //parser->setError(1002); //invalid field
             return;
         }

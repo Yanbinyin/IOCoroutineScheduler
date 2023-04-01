@@ -6,7 +6,7 @@
 namespace bin {
 namespace http {
 
-static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
 bin::ConfigVar<uint32_t>::ptr g_websocket_message_max_size
     = bin::Config::Lookup("websocket.message.max_size"
@@ -21,24 +21,24 @@ HttpRequest::ptr WSSession::handleShake(){
     do {
         req = recvRequest();
         if(!req){
-            SYLAR_LOG_INFO(g_logger) << "invalid http request";
+            BIN_LOG_INFO(g_logger) << "invalid http request";
             break;
         }
         if(strcasecmp(req->getHeader("Upgrade").c_str(), "websocket")){
-            SYLAR_LOG_INFO(g_logger) << "http header Upgrade != websocket";
+            BIN_LOG_INFO(g_logger) << "http header Upgrade != websocket";
             break;
         }
         if(strcasecmp(req->getHeader("Connection").c_str(), "Upgrade")){
-            SYLAR_LOG_INFO(g_logger) << "http header Connection != Upgrade";
+            BIN_LOG_INFO(g_logger) << "http header Connection != Upgrade";
             break;
         }
         if(req->getHeaderAs<int>("Sec-webSocket-Version") != 13){
-            SYLAR_LOG_INFO(g_logger) << "http header Sec-webSocket-Version != 13";
+            BIN_LOG_INFO(g_logger) << "http header Sec-webSocket-Version != 13";
             break;
         }
         std::string key = req->getHeader("Sec-WebSocket-Key");
         if(key.empty()){
-            SYLAR_LOG_INFO(g_logger) << "http header Sec-WebSocket-Key = null";
+            BIN_LOG_INFO(g_logger) << "http header Sec-WebSocket-Key = null";
             break;
         }
 
@@ -55,12 +55,12 @@ HttpRequest::ptr WSSession::handleShake(){
         rsp->setHeader("Sec-WebSocket-Accept", v);
 
         sendResponse(rsp);
-        SYLAR_LOG_DEBUG(g_logger) << *req;
-        SYLAR_LOG_DEBUG(g_logger) << *rsp;
+        BIN_LOG_DEBUG(g_logger) << *req;
+        BIN_LOG_DEBUG(g_logger) << *rsp;
         return req;
     } while(false);
     if(req){
-        SYLAR_LOG_INFO(g_logger) << *req;
+        BIN_LOG_INFO(g_logger) << *req;
     }
     return nullptr;
 }
@@ -108,10 +108,10 @@ WSFrameMessage::ptr WSRecvMessage(Stream* stream, bool client){
         if(stream->readFixSize(&ws_head, sizeof(ws_head)) <= 0){
             break;
         }
-        SYLAR_LOG_DEBUG(g_logger) << "WSFrameHead " << ws_head.toString();
+        BIN_LOG_DEBUG(g_logger) << "WSFrameHead " << ws_head.toString();
 
         if(ws_head.opcode == WSFrameHead::PING){
-            SYLAR_LOG_INFO(g_logger) << "PING";
+            BIN_LOG_INFO(g_logger) << "PING";
             if(WSPong(stream) <= 0){
                 break;
             }
@@ -120,7 +120,7 @@ WSFrameMessage::ptr WSRecvMessage(Stream* stream, bool client){
                 || ws_head.opcode == WSFrameHead::TEXT_FRAME
                 || ws_head.opcode == WSFrameHead::BIN_FRAME){
             if(!client && !ws_head.mask){
-                SYLAR_LOG_INFO(g_logger) << "WSFrameHead mask != 1";
+                BIN_LOG_INFO(g_logger) << "WSFrameHead mask != 1";
                 break;
             }
             uint64_t length = 0;
@@ -141,7 +141,7 @@ WSFrameMessage::ptr WSRecvMessage(Stream* stream, bool client){
             }
 
             if((cur_len + length) >= g_websocket_message_max_size->getValue()){
-                SYLAR_LOG_WARN(g_logger) << "WSFrameMessage length > "
+                BIN_LOG_WARN(g_logger) << "WSFrameMessage length > "
                     << g_websocket_message_max_size->getValue()
                     << " (" << (cur_len + length) << ")";
                 break;
@@ -169,11 +169,11 @@ WSFrameMessage::ptr WSRecvMessage(Stream* stream, bool client){
             }
 
             if(ws_head.fin){
-                SYLAR_LOG_DEBUG(g_logger) << data;
+                BIN_LOG_DEBUG(g_logger) << data;
                 return WSFrameMessage::ptr(new WSFrameMessage(opcode, std::move(data)));
             }
         }else{
-            SYLAR_LOG_DEBUG(g_logger) << "invalid opcode=" << ws_head.opcode;
+            BIN_LOG_DEBUG(g_logger) << "invalid opcode=" << ws_head.opcode;
         }
     } while(true);
     stream->close();

@@ -1,5 +1,5 @@
-#ifndef _SYLAR_LOG_H_
-#define _SYLAR_LOG_H_
+#ifndef _BIN_LOG_H_
+#define _BIN_LOG_H_
 
 #include <string>
 #include <stdint.h>
@@ -15,36 +15,36 @@
 #include "thread.h"
 
 //固定日志级别输出日志内容
-#define SYLAR_LOG_LEVEL(logger, level) \
+#define BIN_LOG_LEVEL(logger, level) \
     if(logger->getLevel() <= level) \
         bin::LogEventWrap(bin::LogEvent::ptr(new bin::LogEvent(logger, level, __FILE__, __LINE__, 0, bin::GetThreadId(),\
                 bin::GetFiberId(), time(0), bin::Thread::GetName()))).getSS()
 
-#define SYLAR_LOG_DEBUG(logger) SYLAR_LOG_LEVEL(logger, bin::LogLevel::DEBUG)
-#define SYLAR_LOG_INFO(logger) SYLAR_LOG_LEVEL(logger, bin::LogLevel::INFO)
-#define SYLAR_LOG_WARN(logger) SYLAR_LOG_LEVEL(logger, bin::LogLevel::WARN)
-#define SYLAR_LOG_ERROR(logger) SYLAR_LOG_LEVEL(logger, bin::LogLevel::ERROR)
-#define SYLAR_LOG_FATAL(logger) SYLAR_LOG_LEVEL(logger, bin::LogLevel::FATAL)
+#define BIN_LOG_DEBUG(logger) BIN_LOG_LEVEL(logger, bin::LogLevel::DEBUG)
+#define BIN_LOG_INFO(logger) BIN_LOG_LEVEL(logger, bin::LogLevel::INFO)
+#define BIN_LOG_WARN(logger) BIN_LOG_LEVEL(logger, bin::LogLevel::WARN)
+#define BIN_LOG_ERROR(logger) BIN_LOG_LEVEL(logger, bin::LogLevel::ERROR)
+#define BIN_LOG_FATAL(logger) BIN_LOG_LEVEL(logger, bin::LogLevel::FATAL)
 
 /**
  * @brief 使用格式化方式将日志级别level的日志写入到logger
  */
 //带参日志输出日志内容
-#define SYLAR_LOG_FMT_LEVEL(logger, level, fmt, ...) \
+#define BIN_LOG_FMT_LEVEL(logger, level, fmt, ...) \
     if(logger->getLevel() <= level) \
         bin::LogEventWrap(bin::LogEvent::ptr(new bin::LogEvent(logger, level, __FILE__, __LINE__, 0, bin::GetThreadId(),\
                 bin::GetFiberId(), time(0), bin::Thread::GetName()))).getEvent()->format(fmt, __VA_ARGS__)
-#define SYLAR_LOG_FMT_DEBUG(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, bin::LogLevel::DEBUG, fmt, __VA_ARGS__)
-#define SYLAR_LOG_FMT_INFO(logger, fmt, ...)  SYLAR_LOG_FMT_LEVEL(logger, bin::LogLevel::INFO, fmt, __VA_ARGS__)
-#define SYLAR_LOG_FMT_WARN(logger, fmt, ...)  SYLAR_LOG_FMT_LEVEL(logger, bin::LogLevel::WARN, fmt, __VA_ARGS__)
-#define SYLAR_LOG_FMT_ERROR(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, bin::LogLevel::ERROR, fmt, __VA_ARGS__)
-#define SYLAR_LOG_FMT_FATAL(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, bin::LogLevel::FATAL, fmt, __VA_ARGS__)
+#define BIN_LOG_FMT_DEBUG(logger, fmt, ...) BIN_LOG_FMT_LEVEL(logger, bin::LogLevel::DEBUG, fmt, __VA_ARGS__)
+#define BIN_LOG_FMT_INFO(logger, fmt, ...)  BIN_LOG_FMT_LEVEL(logger, bin::LogLevel::INFO, fmt, __VA_ARGS__)
+#define BIN_LOG_FMT_WARN(logger, fmt, ...)  BIN_LOG_FMT_LEVEL(logger, bin::LogLevel::WARN, fmt, __VA_ARGS__)
+#define BIN_LOG_FMT_ERROR(logger, fmt, ...) BIN_LOG_FMT_LEVEL(logger, bin::LogLevel::ERROR, fmt, __VA_ARGS__)
+#define BIN_LOG_FMT_FATAL(logger, fmt, ...) BIN_LOG_FMT_LEVEL(logger, bin::LogLevel::FATAL, fmt, __VA_ARGS__)
 
 //通过单例LoggerMgr--->访问到LogManager中默认的Logger实例化对象
-#define SYLAR_LOG_ROOT() bin::LoggerMgr::GetInstance()->getRoot() //返回一个唯一的singleton LogManager指针
+#define BIN_LOG_ROOT() bin::LoggerMgr::GetInstance()->getRoot() //返回一个唯一的singleton LogManager指针
 
 //通过日志器的名字获取日志器实体
-#define SYLAR_LOG_NAME(name) bin::LoggerMgr::GetInstance()->getLogger(name)
+#define BIN_LOG_NAME(name) bin::LoggerMgr::GetInstance()->getLogger(name)
 
 namespace bin{
 

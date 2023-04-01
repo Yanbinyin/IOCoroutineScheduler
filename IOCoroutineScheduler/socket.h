@@ -1,7 +1,7 @@
 //Socket封装
 
-#ifndef __SYLAR_SOCKET_H__
-#define __SYLAR_SOCKET_H__
+#ifndef __BIN_SOCKET_H__
+#define __BIN_SOCKET_H__
 
 #include <memory>
 #include <netinet/tcp.h>

@@ -5,8 +5,8 @@
 
     注意：和HOOK模块的文件句柄类做一个区分，这里的套接字句柄专门针对套接字上的事件做回调管理
 */
-#ifndef __SYLAR_IOMANAGER_H__
-#define __SYLAR_IOMANAGER_H__
+#ifndef __BIN_IOMANAGER_H__
+#define __BIN_IOMANAGER_H__
 
 #include "scheduler.h"
 #include "timer.h"

@@ -21,11 +21,11 @@ int main(){
     fmt_file_app->setLevel(LogLevel::ERROR);
     logger->addAppender(fmt_file_app);
 
-    SYLAR_LOG_DEBUG(logger) << "hello log";
-    SYLAR_LOG_FATAL(logger) << "有致命错误";
+    BIN_LOG_DEBUG(logger) << "hello log";
+    BIN_LOG_FATAL(logger) << "有致命错误";
 
-    SYLAR_LOG_FMT_ERROR(logger, "fmt error test: %s", "成功");
-    SYLAR_LOG_WARN(logger) << "warn log";
+    BIN_LOG_FMT_ERROR(logger, "fmt error test: %s", "成功");
+    BIN_LOG_WARN(logger) << "warn log";
 }
 
 // int main(){
@@ -50,18 +50,18 @@ int main(){
 
 //     std::cout << "Hello, Bin log" << std::endl ;
 
-//     SYLAR_LOG_INFO(logger) << "test macro1";
-//     SYLAR_LOG_INFO(logger) << "test macro2";
-//     SYLAR_LOG_INFO(logger) << "test macro3";
-//     SYLAR_LOG_ERROR(logger) << "test macro error";
-//     SYLAR_LOG_FMT_ERROR(logger, "test macro fmt error %s", "aa");
+//     BIN_LOG_INFO(logger) << "test macro1";
+//     BIN_LOG_INFO(logger) << "test macro2";
+//     BIN_LOG_INFO(logger) << "test macro3";
+//     BIN_LOG_ERROR(logger) << "test macro error";
+//     BIN_LOG_FMT_ERROR(logger, "test macro fmt error %s", "aa");
 
 //     auto l = bin::LoggerMgr::GetInstance()->getLogger("xx");
-//     SYLAR_LOG_INFO(l) << "xxx";
+//     BIN_LOG_INFO(l) << "xxx";
 
-//     // SYLAR_LOG_INFO(file_appender) << "test macro";
-//     // SYLAR_LOG_ERROR(file_appender) << "test macro error";
-//     // SYLAR_LOG_FMT_ERROR(file_appender, "test macro fmt error %s", "aa");
+//     // BIN_LOG_INFO(file_appender) << "test macro";
+//     // BIN_LOG_ERROR(file_appender) << "test macro error";
+//     // BIN_LOG_FMT_ERROR(file_appender, "test macro fmt error %s", "aa");
 
 //     return 0;
 // }

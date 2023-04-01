@@ -1,5 +1,5 @@
-#ifndef __SYLAR_CONFIG_H__
-#define __SYLAR_CONFIG_H__
+#ifndef __BIN_CONFIG_H__
+#define __BIN_CONFIG_H__
 
 #include <memory>
 #include <string>
@@ -284,7 +284,7 @@ namespace bin{
                 //完成各种类型向string类型的转化
                 return ToStr()(m_val);
             } catch (std::exception& e){
-                SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "ConfigVar::toString exception"
+                BIN_LOG_ERROR(BIN_LOG_ROOT()) << "ConfigVar::toString exception"
                     << e.what() << " convert: " << typeid(m_val).name() << " to string";
             }
             return "";
@@ -295,7 +295,7 @@ namespace bin{
                 //完成各种类型向T类型的转化
                 setValue(FromStr()(val));
             } catch (std::exception& e){
-                SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "ConfigVar::fromString exception "
+                BIN_LOG_ERROR(BIN_LOG_ROOT()) << "ConfigVar::fromString exception "
                     << e.what() << " convert: string to " << typeid(m_val).name() << val << ";";
             }
             return false;
@@ -382,19 +382,19 @@ namespace bin{
                 auto tmp = std::dynamic_pointer_cast<ConfigVar<T> >(it->second);
                 //转换成功
                 if(tmp){
-                    SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "Lookup name=" << name << " exists";
+                    BIN_LOG_INFO(BIN_LOG_ROOT()) << "Lookup name=" << name << " exists";
                     return tmp;
                 }
                 //转换失败
                 else{
-                    SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "Lookup name=" << name << " exists but type not " << typeid(T).name() << " real_type = " << it->second->getTypeName() << " " << it->second->toString();
+                    BIN_LOG_ERROR(BIN_LOG_ROOT()) << "Lookup name=" << name << " exists but type not " << typeid(T).name() << " real_type = " << it->second->getTypeName() << " " << it->second->toString();
                     return nullptr;
                 }
             }
             //if(false): 不存在，创建
             //在name中查找第一个不在 “ab……789” 中的字符的位置
             if(name.find_first_not_of("abcdefghijklmnopqrstuvwxyz._0123456789") != std::string::npos){
-                SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "Lookup name invalid " << name;
+                BIN_LOG_ERROR(BIN_LOG_ROOT()) << "Lookup name invalid " << name;
                 throw std::invalid_argument(name);
             }
             typename ConfigVar<T>::ptr v(new ConfigVar<T>(name, default_value, description));

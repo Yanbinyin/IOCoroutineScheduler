@@ -1,5 +1,5 @@
-#ifndef __SYLAR_HTTP_WS_SERVER_H__
-#define __SYLAR_HTTP_WS_SERVER_H__
+#ifndef __BIN_HTTP_WS_SERVER_H__
+#define __BIN_HTTP_WS_SERVER_H__
 
 #include "IOCoroutineScheduler/tcp_server.h"
 #include "ws_session.h"

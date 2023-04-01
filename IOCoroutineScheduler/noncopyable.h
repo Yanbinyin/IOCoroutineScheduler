@@ -1,5 +1,5 @@
-#ifndef __SYLAR_NONCOPYABLE_H__
-#define __SYLAR_NONCOPYABLE_H__
+#ifndef __BIN_NONCOPYABLE_H__
+#define __BIN_NONCOPYABLE_H__
 
 namespace bin {
 

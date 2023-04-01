@@ -1,5 +1,5 @@
-#ifndef __SYLAR_MODULE_H__
-#define __SYLAR_MODULE_H__
+#ifndef __BIN_MODULE_H__
+#define __BIN_MODULE_H__
 
 #include "IOCoroutineScheduler/stream.h"
 #include "IOCoroutineScheduler/singleton.h"

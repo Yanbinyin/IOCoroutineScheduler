@@ -8,7 +8,7 @@
 #include "fd_manager.h"
 #include "macro.h"
 
-bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
 //block1 准备：完成HOOK的初始化
 //HOOK工作需要在程序真正开始执行前完成，即：在进入main()之前执行完毕
@@ -73,7 +73,7 @@ namespace bin{
             hook_init(); //初始化hook
             s_connect_timeout = g_tcp_connect_timeout->getValue();
             g_tcp_connect_timeout->addListener([](const int& old_value, const int& new_value){
-                    SYLAR_LOG_INFO(g_logger) << "tcp connect timeout changed from "
+                    BIN_LOG_INFO(g_logger) << "tcp connect timeout changed from "
                                              << old_value << " to " << new_value;
                     s_connect_timeout = new_value;
             });
@@ -115,7 +115,7 @@ static ssize_t do_io(int fd, OriginFun fun, const char* hook_fun_name, uint32_t 
     if(!bin::t_hook_enable)
         return fun(fd, std::forward<Args>(args)...);
 
-    SYLAR_LOG_DEBUG(g_logger) << "do_io<" << hook_fun_name << ">";
+    BIN_LOG_DEBUG(g_logger) << "do_io<" << hook_fun_name << ">";
 
     //1. 从FdManager中通过get()获取当前文件描述符fd的对象FdCtx
     bin::FdCtx::ptr ctx = bin::FdMgr::GetInstance()->get(fd);
@@ -167,8 +167,8 @@ retry:
         
         //ⅱ. IOManagerIO调度器为fd添加所需的读/写事件，设置异步回调
         int rt = iom->addEvent(fd, (bin::IOManager::Event)(event));
-        if(SYLAR_UNLIKELY(rt)){ //添加失败
-            SYLAR_LOG_ERROR(g_logger) << hook_fun_name << " addEvent(" << fd << ", " << event << ")";
+        if(BIN_UNLIKELY(rt)){ //添加失败
+            BIN_LOG_ERROR(g_logger) << hook_fun_name << " addEvent(" << fd << ", " << event << ")";
             if(timer)
                 timer->cancel();
             return -1;
@@ -383,7 +383,7 @@ extern "C"{
             if(timer){
                 timer->cancel();
             }
-            SYLAR_LOG_ERROR(g_logger) << "connect addEvent(" << fd << ", WRITE) error";
+            BIN_LOG_ERROR(g_logger) << "connect addEvent(" << fd << ", WRITE) error";
         }
 
         //协程切回后 检查一下socket上是否有错误  才能最终判断连接是否建立

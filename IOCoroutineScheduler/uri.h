@@ -1,7 +1,7 @@
 //URI封装类: 封装对远端服务器发起请求后的HTTP报文处理结果
 
-#ifndef __SYLAR_URI_H__
-#define __SYLAR_URI_H__
+#ifndef __BIN_URI_H__
+#define __BIN_URI_H__
 
 #include <memory>
 #include <string>

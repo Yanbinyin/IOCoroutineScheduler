@@ -761,17 +761,17 @@ namespace bin
         LogIniter(){
             g_log_defines->addListener([](const std::set<LogDefine>& old_value, const std::set<LogDefine>& new_value){
             //g_log_defines->addListener(0xF1E231, [](const std::set<LogDefine>& old_value, const std::set<LogDefine>& new_value){
-                SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "on_logger_conf_changed";
+                BIN_LOG_INFO(BIN_LOG_ROOT()) << "on_logger_conf_changed";
                 for(auto& i : new_value){
                     auto it = old_value.find(i);
                     bin::Logger::ptr logger;
                     if(it == old_value.end()){//没找到，新增logger                        
-                        logger = SYLAR_LOG_NAME(i.name);
+                        logger = BIN_LOG_NAME(i.name);
                     }                    
                     else {//找到了，修改日志器   旧的日志器存在  新的日志器也存在                                               
                         if(!(i == *it)){//两者内容有变化
                             //找到要修改的logger
-                            logger = SYLAR_LOG_NAME(i.name);
+                            logger = BIN_LOG_NAME(i.name);
                         }                        
                         else {//新旧日志相等，无变化
                             continue;
@@ -818,7 +818,7 @@ namespace bin
                     auto it = new_value.find(i);
                     if(it == new_value.end()){
                         //删除logger                        
-                        auto logger = SYLAR_LOG_NAME(i.name);
+                        auto logger = BIN_LOG_NAME(i.name);
                         logger->setLevel((LogLevel::Level)0);
                         logger->clearAppenders();
                     }

@@ -7,8 +7,8 @@
 #include <fstream>
 
 
-static bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
-static bin::Logger::ptr g_logger2 = SYLAR_LOG_NAME("connect");
+static bin::Logger::ptr g_logger = BIN_LOG_ROOT();
+static bin::Logger::ptr g_logger2 = BIN_LOG_NAME("connect");
 
 
 void test_pool(){
@@ -17,7 +17,7 @@ void test_pool(){
 
     bin::IOManager::GetThis()->addTimer(1000, [pool](){
             auto r = pool->doGet("/", 300);
-            SYLAR_LOG_INFO(g_logger) << r->toString();
+            BIN_LOG_INFO(g_logger) << r->toString();
     }, true);
 }
 
@@ -30,14 +30,14 @@ void run(){
     //向该网站发起请求
     bin::Address::ptr addr = bin::Address::LookupAnyIPAddress("www.bin.top:80");
     if(!addr){
-        SYLAR_LOG_INFO(g_logger) << "get addr error";
+        BIN_LOG_INFO(g_logger) << "get addr error";
         return;
     }
 
     bin::Socket::ptr sock = bin::Socket::CreateTCP(addr);
     bool rt = sock->connect(addr);
     if(!rt){
-        SYLAR_LOG_INFO(g_logger) << "connect " << *addr << " failed";
+        BIN_LOG_INFO(g_logger) << "connect " << *addr << " failed";
         return;
     }
 
@@ -45,7 +45,7 @@ void run(){
     bin::http::HttpRequest::ptr req(new bin::http::HttpRequest);
     req->setPath("/blog/"); //浏览器访问www.bin.top，会加路径定向到www.bin.top/blog/
     req->setHeader("host", "www.bin.top");
-    SYLAR_LOG_INFO(g_logger) << "req:" << std::endl
+    BIN_LOG_INFO(g_logger) << "req:" << std::endl
         << *req;
 
     //发送请求接受响应
@@ -53,23 +53,23 @@ void run(){
     auto rsp = conn->recvResponse();
 
     if(!rsp){
-        SYLAR_LOG_INFO(g_logger) << "recv response error";
+        BIN_LOG_INFO(g_logger) << "recv response error";
         return;
     }
-    // SYLAR_LOG_INFO(g_logger) << "rsp:" << std::endl
+    // BIN_LOG_INFO(g_logger) << "rsp:" << std::endl
     //     << *rsp;
     //响应报文太长，没打印日志直接保存到rsp.dat文件中
     std::ofstream ofs("rsp.dat");
     ofs << *rsp;
 
-    SYLAR_LOG_INFO(g_logger) << "=========================";
+    BIN_LOG_INFO(g_logger) << "=========================";
 
     auto r = bin::http::HttpConnection::DoGet("http://www.bin.top/blog/", 300);
-    SYLAR_LOG_INFO(g_logger) << "result=" << r->result
+    BIN_LOG_INFO(g_logger) << "result=" << r->result
         << " error=" << r->error
         << " rsp=" << (r->response ? r->response->toString() : "");
 
-    SYLAR_LOG_INFO(g_logger) << "=========================";
+    BIN_LOG_INFO(g_logger) << "=========================";
     test_pool();
 }
 
@@ -80,7 +80,7 @@ void run(){
 //                         {"Connection", "keep-alive"},
 //                         {"User-Agent", "curl/7.29.0"}
 //             });
-//     SYLAR_LOG_INFO(g_logger) << "result=" << r->result
+//     BIN_LOG_INFO(g_logger) << "result=" << r->result
 //         << " error=" << r->error
 //         << " rsp=" << (r->response ? r->response->toString() : "");
 //
@@ -93,7 +93,7 @@ void run(){
 //                         {"Accept-Encoding", "gzip, deflate, br"},
 //                         {"User-Agent", "curl/7.29.0"}
 //                     });
-//             SYLAR_LOG_INFO(g_logger) << r->toString();
+//             BIN_LOG_INFO(g_logger) << r->toString();
 //     }, true);
 // }
 

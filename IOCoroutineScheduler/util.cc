@@ -16,7 +16,7 @@
 
 namespace bin{
 
-    static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+    static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
     pid_t GetThreadId(){        
         return syscall(SYS_gettid);
@@ -62,7 +62,7 @@ namespace bin{
         //bin:在一个新的malloc()处理的内存块中返回array中backtrace list中的函数名
         char** strings = backtrace_symbols(array, s);
         if(strings == NULL){
-            SYLAR_LOG_ERROR(g_logger) << "backtrace_synbols error";
+            BIN_LOG_ERROR(g_logger) << "backtrace_synbols error";
             return;
         }
 
@@ -575,7 +575,7 @@ namespace bin{
 
         in_addr_t localhost = inet_addr("127.0.0.1");
         if(getifaddrs(&ifas)){
-            SYLAR_LOG_ERROR(g_logger) << "getifaddrs errno=" << errno
+            BIN_LOG_ERROR(g_logger) << "getifaddrs errno=" << errno
                 << " errstr=" << strerror(errno);
             return localhost;
         }

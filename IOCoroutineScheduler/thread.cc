@@ -9,7 +9,7 @@ namespace bin {
     static thread_local std::string t_thread_name = "UNKNOW";   //存储当前运行线程的名称
 
     //系统日志统一打印到system
-    static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+    static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
     Thread* Thread::GetThis(){
         return t_thread;
@@ -43,7 +43,7 @@ namespace bin {
         //power:利用pthread库开启运行线程，并且置一个信号量去等待 线程完全开启后 再 退出构造函数
         int rt = pthread_create(&m_thread, nullptr, &Thread::run, this);
         if(rt){
-            SYLAR_LOG_ERROR(g_logger) << "pthread_create thread fail, rt=" << rt << " name=" << name;
+            BIN_LOG_ERROR(g_logger) << "pthread_create thread fail, rt=" << rt << " name=" << name;
             throw std::logic_error("pthread_create error");
         }
         //当执行完上面的API线程可能不会马上运行 手动等待一下直到线程完全开始运行
@@ -55,9 +55,9 @@ namespace bin {
         if(m_thread){
             //析构时候不马上杀死线程 而是将其置为分离态，然后析构
             pthread_detach(m_thread);
-            //SYLAR_LOG_INFO(g_logger) << "线程detach & 析构";
+            //BIN_LOG_INFO(g_logger) << "线程detach & 析构";
         }else{
-            //SYLAR_LOG_INFO(g_logger) << "线程析构";
+            //BIN_LOG_INFO(g_logger) << "线程析构";
         }
     }
 
@@ -65,19 +65,19 @@ namespace bin {
         if(m_thread){
             int rt = pthread_join(m_thread, nullptr); //以阻塞态的形式等待线程终止
             if(rt){
-                SYLAR_LOG_ERROR(g_logger) << "pthread_join thread fail, rt=" << rt << " name=" << m_name;
+                BIN_LOG_ERROR(g_logger) << "pthread_join thread fail, rt=" << rt << " name=" << m_name;
                 throw std::logic_error("pthread_join error");
             }
             m_thread = 0;
         }
-        //SYLAR_LOG_INFO(g_logger) << "name: " << m_name << " join";   //for test, bin add
+        //BIN_LOG_INFO(g_logger) << "name: " << m_name << " join";   //for test, bin add
     }
 
     /*//power:必须为static
         void* 的，无类型指针，保证线程能够接受任意类型的参数，到时候再强制转换
     */
     void* Thread::run(void* arg){
-        SYLAR_LOG_INFO(g_logger) << "thread::run() begin";
+        BIN_LOG_INFO(g_logger) << "thread::run() begin";
 
         //pthread_create()的时候最后一个参数为run()的参数，构造函数调用时传入的是this指针
         //接收传入的this指针 因为是个static方法 因此依靠传入this指针很重要

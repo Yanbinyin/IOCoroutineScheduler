@@ -5,7 +5,7 @@
 
 namespace bin {
 
-static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
 AsyncSocketStream::Ctx::Ctx()
     :sn(0)
@@ -106,7 +106,7 @@ void AsyncSocketStream::doRead(){
         //TODO log
     }
 
-    SYLAR_LOG_DEBUG(g_logger) << "doRead out " << this;
+    BIN_LOG_DEBUG(g_logger) << "doRead out " << this;
     innerClose();
     m_waitSem.notify();
 
@@ -135,7 +135,7 @@ void AsyncSocketStream::doWrite(){
     } catch (...){
         //TODO log
     }
-    SYLAR_LOG_DEBUG(g_logger) << "doWrite out " << this;
+    BIN_LOG_DEBUG(g_logger) << "doWrite out " << this;
     {
         RWMutexType::WriteLock lock(m_queueMutex);
         m_queue.clear();
@@ -184,7 +184,7 @@ bool AsyncSocketStream::addCtx(Ctx::ptr ctx){
 }
 
 bool AsyncSocketStream::enqueue(SendCtx::ptr ctx){
-    SYLAR_ASSERT(ctx);
+    BIN_ASSERT(ctx);
     RWMutexType::WriteLock lock(m_queueMutex);
     bool empty = m_queue.empty();
     m_queue.push_back(ctx);
@@ -196,7 +196,7 @@ bool AsyncSocketStream::enqueue(SendCtx::ptr ctx){
 }
 
 bool AsyncSocketStream::innerClose(){
-    SYLAR_ASSERT(m_iomanager == bin::IOManager::GetThis());
+    BIN_ASSERT(m_iomanager == bin::IOManager::GetThis());
     if(isConnected() && m_disconnectCb){
         m_disconnectCb(shared_from_this());
     }

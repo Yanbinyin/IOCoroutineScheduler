@@ -1,5 +1,5 @@
-#ifndef __SYLAR_STREAMS_ZLIB_STREAM_H__
-#define __SYLAR_STREAMS_ZLIB_STREAM_H__
+#ifndef __BIN_STREAMS_ZLIB_STREAM_H__
+#define __BIN_STREAMS_ZLIB_STREAM_H__
 
 #include "IOCoroutineScheduler/stream.h"
 #include <sys/uio.h>

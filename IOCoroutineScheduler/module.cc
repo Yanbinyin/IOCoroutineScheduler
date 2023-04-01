@@ -11,7 +11,7 @@ namespace bin {
 static bin::ConfigVar<std::string>::ptr g_module_path
     = Config::Lookup("module.path", std::string("module"), "module path");
 
-static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
 Module::Module(const std::string& name
             ,const std::string& version
@@ -33,14 +33,14 @@ void Module::onAfterArgsParse(int argc, char** argv){
 bool Module::handleRequest(bin::Message::ptr req
                            ,bin::Message::ptr rsp
                            ,bin::Stream::ptr stream){
-    SYLAR_LOG_DEBUG(g_logger) << "handleRequest req=" << req->toString()
+    BIN_LOG_DEBUG(g_logger) << "handleRequest req=" << req->toString()
             << " rsp=" << rsp->toString() << " stream=" << stream;
     return true;
 }
 
 bool Module::handleNotify(bin::Message::ptr notify
                           ,bin::Stream::ptr stream){
-    SYLAR_LOG_DEBUG(g_logger) << "handleNotify nty=" << notify->toString()
+    BIN_LOG_DEBUG(g_logger) << "handleNotify nty=" << notify->toString()
             << " stream=" << stream;
     return true;
 }

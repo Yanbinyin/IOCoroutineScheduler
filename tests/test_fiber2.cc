@@ -1,27 +1,27 @@
 #include "IOCoroutineScheduler/bin.h"
 
-bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+bin::Logger::ptr g_logger = BIN_LOG_ROOT();
 
 void run_in_fiber(){
-    SYLAR_LOG_INFO(g_logger) << "run_in_fiber begin";
+    BIN_LOG_INFO(g_logger) << "run_in_fiber begin";
     bin::Fiber::YieldToHold();
-    SYLAR_LOG_INFO(g_logger) << "run_in_fiber end";
+    BIN_LOG_INFO(g_logger) << "run_in_fiber end";
     bin::Fiber::YieldToHold();
 }
 
 void test_fiber(){
-    SYLAR_LOG_INFO(g_logger) << "main begin -1";
+    BIN_LOG_INFO(g_logger) << "main begin -1";
     {
         bin::Fiber::GetThis();
-        SYLAR_LOG_INFO(g_logger) << "main begin";
+        BIN_LOG_INFO(g_logger) << "main begin";
         bin::Fiber::ptr fiber(new bin::Fiber(run_in_fiber));
         fiber->swapIn();
-        SYLAR_LOG_INFO(g_logger) << "main after swapIn";
+        BIN_LOG_INFO(g_logger) << "main after swapIn";
         fiber->swapIn();
-        SYLAR_LOG_INFO(g_logger) << "main after end";
+        BIN_LOG_INFO(g_logger) << "main after end";
         fiber->swapIn();
     }
-    SYLAR_LOG_INFO(g_logger) << "main after end2";
+    BIN_LOG_INFO(g_logger) << "main after end2";
 }
 
 int main(int argc, char** argv){

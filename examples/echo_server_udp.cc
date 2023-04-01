@@ -2,15 +2,15 @@
 #include "IOCoroutineScheduler/log.h"
 #include "IOCoroutineScheduler/iomanager.h"
 
-static bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static bin::Logger::ptr g_logger = BIN_LOG_ROOT();
 
 void run(){
     bin::IPAddress::ptr addr = bin::Address::LookupAnyIPAddress("0.0.0.0:8050");
     bin::Socket::ptr sock = bin::Socket::CreateUDP(addr);
     if(sock->bind(addr)){
-        SYLAR_LOG_INFO(g_logger) << "udp bind : " << *addr;
+        BIN_LOG_INFO(g_logger) << "udp bind : " << *addr;
     } else {
-        SYLAR_LOG_ERROR(g_logger) << "udp bind : " << *addr << " fail";
+        BIN_LOG_ERROR(g_logger) << "udp bind : " << *addr << " fail";
         return;
     }
     while(true){
@@ -19,10 +19,10 @@ void run(){
         int len = sock->recvFrom(buff, 1024, from);
         if(len > 0){
             buff[len] = '\0';
-            SYLAR_LOG_INFO(g_logger) << "recv: " << buff << " from: " << *from;
+            BIN_LOG_INFO(g_logger) << "recv: " << buff << " from: " << *from;
             len = sock->sendTo(buff, len, from);
             if(len < 0){
-                SYLAR_LOG_INFO(g_logger) << "send: " << buff << " to: " << *from
+                BIN_LOG_INFO(g_logger) << "send: " << buff << " to: " << *from
                     << " error=" << len;
             }
         }

@@ -56,11 +56,11 @@ namespace bin {
     }
 
     FiberSemaphore::~FiberSemaphore(){
-        SYLAR_ASSERT(m_waiters.empty());
+        BIN_ASSERT(m_waiters.empty());
     }
 
     bool FiberSemaphore::tryWait(){
-        SYLAR_ASSERT(Scheduler::GetThis());
+        BIN_ASSERT(Scheduler::GetThis());
         {
             MutexType::Lock lock(m_mutex);
             if(m_concurrency > 0u){
@@ -72,7 +72,7 @@ namespace bin {
     }
 
     void FiberSemaphore::wait(){
-        SYLAR_ASSERT(Scheduler::GetThis());
+        BIN_ASSERT(Scheduler::GetThis());
         {
             MutexType::Lock lock(m_mutex);
             if(m_concurrency > 0u){

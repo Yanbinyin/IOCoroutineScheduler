@@ -1,5 +1,5 @@
-#ifndef __SYLAR_HTTP_WS_CONNECTION_H__
-#define __SYLAR_HTTP_WS_CONNECTION_H__
+#ifndef __BIN_HTTP_WS_CONNECTION_H__
+#define __BIN_HTTP_WS_CONNECTION_H__
 
 #include "IOCoroutineScheduler/http/http_connection.h"
 #include "IOCoroutineScheduler/http/ws_session.h"

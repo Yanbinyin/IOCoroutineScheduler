@@ -7,7 +7,7 @@
 
 namespace bin {
 
-    static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+    static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
     
     //记录协程信息的线程局部变量
 
@@ -46,26 +46,26 @@ namespace bin {
 
 
     Fiber::Fiber(){
-        SYLAR_LOG_DEBUG(g_logger) << "协程构造: main";
+        BIN_LOG_DEBUG(g_logger) << "协程构造: main";
         m_state = EXEC;
         SetThis(this);
         ++s_fiber_count;
 
         if(getcontext(&m_ctx)){
-            SYLAR_ASSERT2(false, "getcontext");
+            BIN_ASSERT2(false, "getcontext");
         }
     }
 
     Fiber::Fiber(std::function<void()> cb, size_t stacksize, bool use_caller)
         :m_id(++s_fiber_id), m_cb(cb){
-        SYLAR_LOG_DEBUG(g_logger) << "协程构造: " << m_id;
+        BIN_LOG_DEBUG(g_logger) << "协程构造: " << m_id;
         ++s_fiber_count;
 
         //为协程分配栈空间 让回调函数在对应栈空间去运行  未设置的时候 stacksize = 128 * 1024
         m_stacksize = stacksize ? stacksize : g_fiber_stack_size->getValue();
         m_stack = StackAllocator::Alloc(m_stacksize);
         if(getcontext(&m_ctx)){
-            SYLAR_ASSERT2(false, "getcontext");
+            BIN_ASSERT2(false, "getcontext");
         }
         
         //初始化上下文结构体的成员
@@ -84,20 +84,20 @@ namespace bin {
         --s_fiber_count;
         if(m_stack){   //有栈，回收栈
             //只要不是运行态 或者 挂起就释放栈空间
-            SYLAR_ASSERT(m_state == TERM || m_state == EXCEPT || m_state == INIT);
+            BIN_ASSERT(m_state == TERM || m_state == EXCEPT || m_state == INIT);
             //释放栈空间
             StackAllocator::Dealloc(m_stack, m_stacksize);
-            SYLAR_LOG_DEBUG(g_logger) << "协程析构: id/s_fiber_count = " << m_id << "/" << s_fiber_count;
+            BIN_LOG_DEBUG(g_logger) << "协程析构: id/s_fiber_count = " << m_id << "/" << s_fiber_count;
         }
         else{ //没有栈是主协程
-            SYLAR_ASSERT(!m_cb);
-            SYLAR_ASSERT(m_state == EXEC);
+            BIN_ASSERT(!m_cb);
+            BIN_ASSERT(m_state == EXEC);
 
             Fiber* cur = t_fiber;
             if(cur == this){
                 SetThis(nullptr);
             }
-            SYLAR_LOG_DEBUG(g_logger) << "协程析构: main, s_fiber_count = " << s_fiber_count;  //m_id为0，因此不必输出id
+            BIN_LOG_DEBUG(g_logger) << "协程析构: main, s_fiber_count = " << s_fiber_count;  //m_id为0，因此不必输出id
         }
     }
 
@@ -106,11 +106,11 @@ namespace bin {
     //重置协程函数，并重置状态
     //INIT，TERM, EXCEPT
     void Fiber::reset(std::function<void()> cb){
-        SYLAR_ASSERT(m_stack);
-        SYLAR_ASSERT(m_state == TERM || m_state == EXCEPT || m_state == INIT);
+        BIN_ASSERT(m_stack);
+        BIN_ASSERT(m_state == TERM || m_state == EXCEPT || m_state == INIT);
         m_cb = cb;
         if(getcontext(&m_ctx)){
-            SYLAR_ASSERT2(false, "getcontext"); 
+            BIN_ASSERT2(false, "getcontext"); 
         }
 
         m_ctx.uc_link = nullptr;
@@ -128,16 +128,16 @@ namespace bin {
     //         SetThis(Scheduler::GetMainFiber());
     //         if(swapcontext(&m_ctx, &Scheduler::GetMainFiber()->m_ctx) < 0){
     //         //if(swapcontext(&m_ctx, &t_threadFiber->m_ctx)){
-    //             SYLAR_LOG_ERROR(g_logger) << "swapOut: swapcontext error1";
-    //             SYLAR_ASSERT2(false, "swapcontext error1");
+    //             BIN_LOG_ERROR(g_logger) << "swapOut: swapcontext error1";
+    //             BIN_ASSERT2(false, "swapcontext error1");
     //         }
     //     }
     //     //如果当前在调度协程上执行代码 说明是从init协程切过来的 要切回init协程
     //     else{
     //         SetThis(t_threadFiber.get());
     //         if(swapcontext(&m_ctx, &t_threadFiber->m_ctx) < 0){
-    //             SYLAR_LOG_ERROR(g_logger) << "swapOut: swapcontext error2";
-    //             SYLAR_ASSERT2(false, "swapcontext error2");
+    //             BIN_LOG_ERROR(g_logger) << "swapOut: swapcontext error2";
+    //             BIN_ASSERT2(false, "swapcontext error2");
     //         }
     //     }
     // }
@@ -150,14 +150,14 @@ namespace bin {
         SetThis(this);
 
         //没在运行态才能调入运行
-        SYLAR_ASSERT(m_state != EXEC);
+        BIN_ASSERT(m_state != EXEC);
         m_state = EXEC;
         if(swapcontext(&Scheduler::GetMainFiber()->m_ctx, &m_ctx)){
         // if(swapcontext(&t_threadFiber->m_ctx, &m_ctx)){ //test_coroutine时取消注释这里
-            SYLAR_LOG_ERROR(g_logger) << "swapIn: swapcontext error";
-            SYLAR_ASSERT2(false, "swapcontext");
+            BIN_LOG_ERROR(g_logger) << "swapIn: swapcontext error";
+            BIN_ASSERT2(false, "swapcontext");
         }
-        //SYLAR_LOG_INFO(g_logger) << "Fiber " << m_id << " swapin end";
+        //BIN_LOG_INFO(g_logger) << "Fiber " << m_id << " swapin end";
     }
 
     //切换到后台执行
@@ -166,8 +166,8 @@ namespace bin {
         SetThis(Scheduler::GetMainFiber());
         if(swapcontext(&m_ctx, &Scheduler::GetMainFiber()->m_ctx)){
         // if(swapcontext(&m_ctx, &t_threadFiber->m_ctx)){  //test_coroutine时取消注释这里
-            SYLAR_LOG_ERROR(g_logger) << "swapOut: swapcontext error";
-            SYLAR_ASSERT2(false, "swapcontext");
+            BIN_LOG_ERROR(g_logger) << "swapOut: swapcontext error";
+            BIN_ASSERT2(false, "swapcontext");
         }
     }
 
@@ -176,7 +176,7 @@ namespace bin {
         SetThis(this);
         m_state = EXEC;
         if(swapcontext(&t_threadFiber->m_ctx, &m_ctx)){
-            SYLAR_ASSERT2(false, "swapcontext");
+            BIN_ASSERT2(false, "swapcontext");
         }
     }
 
@@ -184,7 +184,7 @@ namespace bin {
     void Fiber::back(){
         SetThis(t_threadFiber.get());
         if(swapcontext(&m_ctx, &t_threadFiber->m_ctx)){
-            SYLAR_ASSERT2(false, "swapcontext");
+            BIN_ASSERT2(false, "swapcontext");
         }
     }   
     
@@ -204,7 +204,7 @@ namespace bin {
         //可以封装成一个函数Init()
         //初始化母协程init，为线程创建第一个协程
         Fiber::ptr main_fiber(new Fiber); //创建母协程init
-        SYLAR_ASSERT(t_fiber == main_fiber.get());
+        BIN_ASSERT(t_fiber == main_fiber.get());
         t_threadFiber = main_fiber; //这句代码很关键
 
         return t_fiber->shared_from_this();
@@ -213,7 +213,7 @@ namespace bin {
     //协程切换到后台，并且设置为Ready状态
     void Fiber::YieldToReady(){
         Fiber::ptr cur = GetThis();
-        SYLAR_ASSERT(cur->m_state == EXEC);
+        BIN_ASSERT(cur->m_state == EXEC);
         cur->m_state = READY;
         cur->swapOut();
     }
@@ -221,7 +221,7 @@ namespace bin {
     //协程切换到后台，并且设置为Hold状态
     void Fiber::YieldToHold(){
         Fiber::ptr cur = GetThis();
-        SYLAR_ASSERT(cur->m_state == EXEC);
+        BIN_ASSERT(cur->m_state == EXEC);
         //不debug协程类时注释下面这一句代码，交给Secheduler::idle()处理，不是停止就hold住
         //cur->m_state = HOLD; 
         cur->swapOut();
@@ -242,20 +242,20 @@ namespace bin {
     //usercall = false
     void Fiber::MainFunc(){
         Fiber::ptr cur = GetThis();
-        SYLAR_ASSERT(cur);
+        BIN_ASSERT(cur);
         try{
-            SYLAR_LOG_DEBUG(g_logger) << "Fier::MainFunc() : cb() begin";
+            BIN_LOG_DEBUG(g_logger) << "Fier::MainFunc() : cb() begin";
             cur->m_cb();
-            SYLAR_LOG_DEBUG(g_logger) << "MainFunc() : cb() end";
+            BIN_LOG_DEBUG(g_logger) << "MainFunc() : cb() end";
             cur->m_cb = nullptr;
             cur->m_state = TERM;//协程已经执行完毕
         }catch(std::exception& ex){
             cur->m_state = EXCEPT;
-            SYLAR_LOG_ERROR(g_logger) << "Fiber Except: " << ex.what() << " fiber_id=" << cur->getId() << std::endl
+            BIN_LOG_ERROR(g_logger) << "Fiber Except: " << ex.what() << " fiber_id=" << cur->getId() << std::endl
                 << bin::BacktraceToString();
         }catch(...){
             cur->m_state = EXCEPT;
-            SYLAR_LOG_ERROR(g_logger) << "Fiber Except, but dont know reason: fiber_id=" << cur->getId() << std::endl
+            BIN_LOG_ERROR(g_logger) << "Fiber Except, but dont know reason: fiber_id=" << cur->getId() << std::endl
                 << bin::BacktraceToString();
         }
 
@@ -267,27 +267,27 @@ namespace bin {
         raw_ptr->swapOut();
 
         //不会再回到这个地方 回来了说明有问题
-        SYLAR_ASSERT2(false, "never reach fiber_id=" + std::to_string(raw_ptr->getId()));
+        BIN_ASSERT2(false, "never reach fiber_id=" + std::to_string(raw_ptr->getId()));
     }
 
     //usercall = true
     void Fiber::CallerMainFunc(){
         Fiber::ptr cur = GetThis();
-        SYLAR_ASSERT(cur);
+        BIN_ASSERT(cur);
         try{
-            SYLAR_LOG_DEBUG(g_logger) << "Fiber::CallerMainFunc() : cb() begin";
+            BIN_LOG_DEBUG(g_logger) << "Fiber::CallerMainFunc() : cb() begin";
             cur->m_cb();
-            SYLAR_LOG_DEBUG(g_logger) << "CallerMainFunc() : cb() end";
+            BIN_LOG_DEBUG(g_logger) << "CallerMainFunc() : cb() end";
             cur->m_cb = nullptr;
             cur->m_state = TERM; //协程已经执行完毕
         }catch(std::exception& ex){
             cur->m_state = EXCEPT;
-            SYLAR_LOG_ERROR(g_logger) << "Fiber Except: " << ex.what()
+            BIN_LOG_ERROR(g_logger) << "Fiber Except: " << ex.what()
                 << " fiber_id=" << cur->getId() << std::endl
                 << bin::BacktraceToString();
         }catch(...){
             cur->m_state = EXCEPT;
-            SYLAR_LOG_ERROR(g_logger) << "Fiber Except, but dont know reason: "
+            BIN_LOG_ERROR(g_logger) << "Fiber Except, but dont know reason: "
                 << " fiber_id=" << cur->getId() << std::endl
                 << bin::BacktraceToString();
         }
@@ -298,7 +298,7 @@ namespace bin {
         raw_ptr->back();
 
         //不会再回到这个地方 回来了说明有问题
-        SYLAR_ASSERT2(false, "never reach fiber_id=" + std::to_string(raw_ptr->getId()));
+        BIN_ASSERT2(false, "never reach fiber_id=" + std::to_string(raw_ptr->getId()));
     }
 
 }

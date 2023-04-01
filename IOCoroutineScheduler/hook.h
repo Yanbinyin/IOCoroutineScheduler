@@ -5,8 +5,8 @@ extern “C”的作用就是告诉C++编译器，这是一个用C写成的库�
 将指定的函数用C规则编译（注意，除了函数重载外，extern “C”不影响C++的其他特性）。
 */
 
-#ifndef __SYLAR_HOOK_H__
-#define __SYLAR_HOOK_H__
+#ifndef __BIN_HOOK_H__
+#define __BIN_HOOK_H__
 
 #include <fcntl.h>
 #include <sys/ioctl.h>

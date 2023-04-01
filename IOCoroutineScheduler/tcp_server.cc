@@ -7,7 +7,7 @@ namespace bin {
     static bin::ConfigVar<uint64_t>::ptr g_tcp_server_read_timeout =
             bin::Config::Lookup("tcp_server.read_timeout", (uint64_t)(60 * 1000 * 2),"tcp server read timeout");
 
-    static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+    static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
     TcpServer::TcpServer(bin::IOManager* worker, bin::IOManager* io_worker, bin::IOManager* accept_worker)
         :m_worker(worker)
@@ -40,12 +40,12 @@ namespace bin {
         for(auto& x : addrs){
             Socket::ptr sock = ssl ? SSLSocket::CreateTCP(x) : Socket::CreateTCP(x);
             if(!sock->bind(x)){ //bind绑定地址
-                SYLAR_LOG_ERROR(g_logger) << "bind fail errno=" << errno << " errstr=" << strerror(errno) << " addr=[" << x->toString() << "]";
+                BIN_LOG_ERROR(g_logger) << "bind fail errno=" << errno << " errstr=" << strerror(errno) << " addr=[" << x->toString() << "]";
                 fails.push_back(x);
                 continue;
             }
             if(!sock->listen()){  //listen监听地址
-                SYLAR_LOG_ERROR(g_logger) << "listen fail errno=" << errno << " errstr=" << strerror(errno) << " addr=[" << x->toString() << "]";
+                BIN_LOG_ERROR(g_logger) << "listen fail errno=" << errno << " errstr=" << strerror(errno) << " addr=[" << x->toString() << "]";
                 fails.push_back(x); //成功监听
                 continue;
             }
@@ -60,7 +60,7 @@ namespace bin {
 
         //利用重载<<符号 打印一下Socket的内容
         for(auto& i : m_listenSocks) 
-            SYLAR_LOG_INFO(g_logger) << "type=" << m_type << " name=" << m_name << " ssl=" << m_ssl << " server bind success: " << *i;
+            BIN_LOG_INFO(g_logger) << "type=" << m_type << " name=" << m_name << " ssl=" << m_ssl << " server bind success: " << *i;
         
         return true;
     }
@@ -107,7 +107,7 @@ namespace bin {
                 //bind()函数适配器传入shared_from_this（this指针封装为智能指针形式）是为了增加对该TcpServer对象的引用，防止handleClient结束之前tcpserver意外析构造成毁灭性错误
                 m_ioWorker->schedule( std::bind(&TcpServer::handleClient, shared_from_this(), client) );
             }else{
-                SYLAR_LOG_ERROR(g_logger) << "accept errno=" << errno << " errstr=" << strerror(errno);
+                BIN_LOG_ERROR(g_logger) << "accept errno=" << errno << " errstr=" << strerror(errno);
             }
         }
     }
@@ -115,7 +115,7 @@ namespace bin {
     //真正负责服务器和客户端之间数据交互的处理函数。
     //假如我们要做即时通讯服务器，那么聊天信息的转发和交换就在该函数中完成；假如做游戏服务器，那么游戏角色的相关信息更新在该函数中完成······
     void TcpServer::handleClient(Socket::ptr client){
-        SYLAR_LOG_INFO(g_logger) << "handleClient: " << *client;
+        BIN_LOG_INFO(g_logger) << "handleClient: " << *client;
         /*需要进行的操作*/
     }
 

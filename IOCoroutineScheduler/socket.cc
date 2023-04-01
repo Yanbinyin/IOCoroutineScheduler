@@ -8,7 +8,7 @@
 
 namespace bin{
 
-    static bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+    static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
     //创建TCP/UDP
     Socket::ptr Socket::CreateTCP(bin::Address::ptr address){
@@ -106,7 +106,7 @@ namespace bin{
     bool Socket::getOption(int level, int option, void* result, socklen_t* len){
         int ret = getsockopt(m_sockfd, level, option, result, (socklen_t*)len);
         if(ret){
-            SYLAR_LOG_DEBUG(g_logger) << "getOption sock=" << m_sockfd << " level=" << level << " option=" << option << " errno=" << errno << " errstr=" << strerror(errno);
+            BIN_LOG_DEBUG(g_logger) << "getOption sock=" << m_sockfd << " level=" << level << " option=" << option << " errno=" << errno << " errstr=" << strerror(errno);
             return false;
         }
         return true;
@@ -115,7 +115,7 @@ namespace bin{
     bool Socket::setOption(int level, int option, const void* result, socklen_t len){
         int ret =setsockopt(m_sockfd, level, option, result, (socklen_t)len);
         if(ret){
-            SYLAR_LOG_DEBUG(g_logger) << "setOption sock=" << m_sockfd << " level=" << level << " option=" << option << " errno=" << errno << " errstr=" << strerror(errno);
+            BIN_LOG_DEBUG(g_logger) << "setOption sock=" << m_sockfd << " level=" << level << " option=" << option << " errno=" << errno << " errstr=" << strerror(errno);
             return false;
         }
         return true;
@@ -128,7 +128,7 @@ namespace bin{
         Socket::ptr sock(new Socket(m_family, m_type, m_protocol));
         int newsock = ::accept(m_sockfd, nullptr, nullptr);
         if(newsock == -1){
-            SYLAR_LOG_ERROR(g_logger) << "accept(" << m_sockfd << ") errno=" << errno << " errstr=" << strerror(errno);
+            BIN_LOG_ERROR(g_logger) << "accept(" << m_sockfd << ") errno=" << errno << " errstr=" << strerror(errno);
             return nullptr;
         }
         if(sock->init(newsock)){
@@ -142,13 +142,13 @@ namespace bin{
         //如果套接字无效
         if(!isValid()){
             newSock();  //创建新的套接字
-            if(SYLAR_UNLIKELY(!isValid()))
+            if(BIN_UNLIKELY(!isValid()))
                 return false;
         }
 
         //socket类型和address类型不符
-        if(SYLAR_UNLIKELY(addr->getFamily() != m_family)){
-            SYLAR_LOG_ERROR(g_logger) << "bind sock.family(" << m_family << ") addr.family(" << addr->getFamily() << ") not equal, addr=" << addr->toString();
+        if(BIN_UNLIKELY(addr->getFamily() != m_family)){
+            BIN_LOG_ERROR(g_logger) << "bind sock.family(" << m_family << ") addr.family(" << addr->getFamily() << ") not equal, addr=" << addr->toString();
             return false;
         }
 
@@ -166,7 +166,7 @@ namespace bin{
         //bind 没有被HOOK
         int ret = ::bind(m_sockfd, addr->getAddr(), addr->getAddrLen());
         if(ret < 0){
-            SYLAR_LOG_ERROR(g_logger) << "bind error errrno=" << errno << " errstr=" << strerror(errno);
+            BIN_LOG_ERROR(g_logger) << "bind error errrno=" << errno << " errstr=" << strerror(errno);
             return false;
         }
         getLocalAddress();
@@ -175,7 +175,7 @@ namespace bin{
 
     bool Socket::reconnect(uint64_t timeout_ms){
         if(!m_remoteAddress){
-            SYLAR_LOG_ERROR(g_logger) << "reconnect m_remoteAddress is null";
+            BIN_LOG_ERROR(g_logger) << "reconnect m_remoteAddress is null";
             return false;
         }
         m_localAddress.reset();
@@ -186,13 +186,13 @@ namespace bin{
         m_remoteAddress = addr;
         if(!isValid()){
             newSock();
-            if(SYLAR_UNLIKELY(!isValid()))
+            if(BIN_UNLIKELY(!isValid()))
                 return false;
         }
 
         //socket类型和address类型不符
-        if(SYLAR_UNLIKELY(addr->getFamily() != m_family)){
-            SYLAR_LOG_ERROR(g_logger) << "connect sock.family(" << m_family << ") addr.family(" << addr->getFamily()
+        if(BIN_UNLIKELY(addr->getFamily() != m_family)){
+            BIN_LOG_ERROR(g_logger) << "connect sock.family(" << m_family << ") addr.family(" << addr->getFamily()
                 << ") not equal, addr=" << addr->toString();
             return false;
         }
@@ -201,7 +201,7 @@ namespace bin{
             //会使用默认超时时间
             int ret = ::connect(m_sockfd, addr->getAddr(), addr->getAddrLen());
             if(ret < 0){
-                SYLAR_LOG_ERROR(g_logger) << "sock=" << m_sockfd << " connect(" << addr->toString()
+                BIN_LOG_ERROR(g_logger) << "sock=" << m_sockfd << " connect(" << addr->toString()
                     << ") error errno=" << errno << " errstr=" << strerror(errno);
                 close();
                 return false;
@@ -209,7 +209,7 @@ namespace bin{
         }else{//使用超时connect
             int ret = ::connect_with_timeout(m_sockfd, addr->getAddr(), addr->getAddrLen(), timeout_ms);
             if(ret < 0){
-                SYLAR_LOG_ERROR(g_logger) << "sock=" << m_sockfd << " connect(" << addr->toString()
+                BIN_LOG_ERROR(g_logger) << "sock=" << m_sockfd << " connect(" << addr->toString()
                     << ") timeout=" << timeout_ms << " error errno=" << errno << " errstr=" << strerror(errno);
                 close();
                 return false;
@@ -223,11 +223,11 @@ namespace bin{
 
     bool Socket::listen(int backlog){
         if(!isValid()){
-            SYLAR_LOG_ERROR(g_logger) << "listen error sock=-1";
+            BIN_LOG_ERROR(g_logger) << "listen error sock=-1";
             return false;
         }
         if(::listen(m_sockfd, backlog)){
-            SYLAR_LOG_ERROR(g_logger) << "listen error errno=" << errno << " errstr=" << strerror(errno);
+            BIN_LOG_ERROR(g_logger) << "listen error errno=" << errno << " errstr=" << strerror(errno);
             return false;
         }
         return true;
@@ -345,7 +345,7 @@ namespace bin{
         }
         socklen_t addrlen = result->getAddrLen();
         if(getpeername(m_sockfd, result->getAddr(), &addrlen)){
-            //SYLAR_LOG_ERROR(g_logger) << "getpeername error sock=" << m_sock << " errno=" << errno << " errstr=" << strerror(errno);
+            //BIN_LOG_ERROR(g_logger) << "getpeername error sock=" << m_sock << " errno=" << errno << " errstr=" << strerror(errno);
             return Address::ptr(new UnknownAddress(m_family));
         }
         if(m_family == AF_UNIX){
@@ -378,7 +378,7 @@ namespace bin{
         socklen_t addrlen = result->getAddrLen();
         int ret = getsockname(m_sockfd, result->getAddr(), &addrlen);
         if(ret){
-            SYLAR_LOG_ERROR(g_logger) << "getsockname error sock=" << m_sockfd << " errno=" << errno << " errstr=" << strerror(errno);
+            BIN_LOG_ERROR(g_logger) << "getsockname error sock=" << m_sockfd << " errno=" << errno << " errstr=" << strerror(errno);
             return Address::ptr(new UnknownAddress(m_family));
         }
         if(m_family == AF_UNIX){
@@ -453,10 +453,10 @@ namespace bin{
     //创建一个新的套接字句柄。将之前hook好的 API 简单封装即可
     void Socket::newSock(){
         m_sockfd = socket(m_family, m_type, m_protocol);
-        if(SYLAR_LIKELY(m_sockfd != -1)){
+        if(BIN_LIKELY(m_sockfd != -1)){
             initSock();
         }else{
-            SYLAR_LOG_ERROR(g_logger) << "socket(" << m_family << ", " << m_type << ", " << m_protocol << ") errno=" << errno << " errstr=" << strerror(errno);
+            BIN_LOG_ERROR(g_logger) << "socket(" << m_family << ", " << m_type << ", " << m_protocol << ") errno=" << errno << " errstr=" << strerror(errno);
         }
     }
 
@@ -501,7 +501,7 @@ namespace bin{
         SSLSocket::ptr sock(new SSLSocket(m_family, m_type, m_protocol));
         int newsock = ::accept(m_sockfd, nullptr, nullptr);
         if(newsock == -1){
-            SYLAR_LOG_ERROR(g_logger) << "accept(" << m_sockfd << ") errno="
+            BIN_LOG_ERROR(g_logger) << "accept(" << m_sockfd << ") errno="
                 << errno << " errstr=" << strerror(errno);
             return nullptr;
         }
@@ -561,12 +561,12 @@ namespace bin{
     }
 
     int SSLSocket::sendTo(const void* buffer, size_t length, const Address::ptr to, int flags){
-        SYLAR_ASSERT(false);
+        BIN_ASSERT(false);
         return -1;
     }
 
     int SSLSocket::sendTo(const iovec* buffers, size_t length, const Address::ptr to, int flags){
-        SYLAR_ASSERT(false);
+        BIN_ASSERT(false);
         return -1;
     }
 
@@ -596,12 +596,12 @@ namespace bin{
     }
 
     int SSLSocket::recvFrom(void* buffer, size_t length, Address::ptr from, int flags){
-        SYLAR_ASSERT(false);
+        BIN_ASSERT(false);
         return -1;
     }
 
     int SSLSocket::recvFrom(iovec* buffers, size_t length, Address::ptr from, int flags){
-        SYLAR_ASSERT(false);
+        BIN_ASSERT(false);
         return -1;
     }
 
@@ -618,17 +618,17 @@ namespace bin{
     bool SSLSocket::loadCertificates(const std::string& cert_file, const std::string& key_file){
         m_ctx.reset(SSL_CTX_new(SSLv23_server_method()), SSL_CTX_free);
         if(SSL_CTX_use_certificate_chain_file(m_ctx.get(), cert_file.c_str()) != 1){
-            SYLAR_LOG_ERROR(g_logger) << "SSL_CTX_use_certificate_chain_file("
+            BIN_LOG_ERROR(g_logger) << "SSL_CTX_use_certificate_chain_file("
                 << cert_file << ") error";
             return false;
         }
         if(SSL_CTX_use_PrivateKey_file(m_ctx.get(), key_file.c_str(), SSL_FILETYPE_PEM) != 1){
-            SYLAR_LOG_ERROR(g_logger) << "SSL_CTX_use_PrivateKey_file("
+            BIN_LOG_ERROR(g_logger) << "SSL_CTX_use_PrivateKey_file("
                 << key_file << ") error";
             return false;
         }
         if(SSL_CTX_check_private_key(m_ctx.get()) != 1){
-            SYLAR_LOG_ERROR(g_logger) << "SSL_CTX_check_private_key cert_file="
+            BIN_LOG_ERROR(g_logger) << "SSL_CTX_check_private_key cert_file="
                 << cert_file << " key_file=" << key_file;
             return false;
         }

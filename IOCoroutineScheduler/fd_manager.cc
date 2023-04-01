@@ -6,7 +6,7 @@
 //#include "config.h"
 
 namespace bin{
-    //bin::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+    //bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
     FdCtx::FdCtx(int fd)
         :m_isInit(false)
@@ -37,7 +37,7 @@ namespace bin{
         if(-1 == fstat(m_fd, &fd_stat)){ //libfunc:
             m_isInit = false;
             m_isSocket = false;
-            //SYLAR_LOG_ERROR(g_logger) << "FdCtx init(): fstat() error";
+            //BIN_LOG_ERROR(g_logger) << "FdCtx init(): fstat() error";
         }else{
             m_isInit = true;
             //取出状态位 判断句柄类型

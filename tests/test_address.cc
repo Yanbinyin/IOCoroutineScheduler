@@ -1,7 +1,7 @@
 #include "IOCoroutineScheduler/address.h"
 #include "IOCoroutineScheduler/log.h"
 
-bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+bin::Logger::ptr g_logger = BIN_LOG_ROOT();
 
 //block: 测试
 void test(){
@@ -11,19 +11,19 @@ void test(){
     //bool v = bin::Address::Lookup(addrs, "www.baidu.com", AF_INET);
     //bool v = bin::Address::Lookup(addrs, "www.bin.top", AF_INET);
     if(!v){
-        SYLAR_LOG_ERROR(g_logger) << "lookup fail";
+        BIN_LOG_ERROR(g_logger) << "lookup fail";
         return;
     }
 
     for(size_t i = 0; i < addrs.size(); ++i){
-        SYLAR_LOG_INFO(g_logger) << i << " - " << addrs[i]->toString();
+        BIN_LOG_INFO(g_logger) << i << " - " << addrs[i]->toString();
     }
 
     auto addr = bin::Address::LookupAny("localhost:4080");
     if(addr){
-        SYLAR_LOG_INFO(g_logger) << *addr;
+        BIN_LOG_INFO(g_logger) << *addr;
     }else{
-        SYLAR_LOG_ERROR(g_logger) << "error";
+        BIN_LOG_ERROR(g_logger) << "error";
     }
 }
 
@@ -42,16 +42,16 @@ void testFTP(){
         //bool v = bin::Address::Lookup(addrs, dm, AF_INET, SOCK_STREAM);
         bool v = bin::Address::Lookup(addrs, dm, AF_INET);
         if(!v){
-            SYLAR_LOG_ERROR(g_logger) << "lookup fail";
+            BIN_LOG_ERROR(g_logger) << "lookup fail";
             return;
         }
 
         //打印解析获取到的地址
-        SYLAR_LOG_INFO(g_logger) << dm;
+        BIN_LOG_INFO(g_logger) << dm;
         for(size_t i = 0; i < addrs.size(); ++i){
             //同样的地址出现了三组，因为返回的协议类型protocol不相同 如果我们指定流式套接字就没有重复了
             //即Address::Lookup()函数里面的type参数
-            SYLAR_LOG_INFO(g_logger) << i << " - " << addrs[i]->toString();
+            BIN_LOG_INFO(g_logger) << i << " - " << addrs[i]->toString();
         }
     }
 }
@@ -62,13 +62,13 @@ void test_iface(){
 
     bool v = bin::Address::GetInterfaceAddresses(results);
     if(!v){
-        SYLAR_LOG_ERROR(g_logger) << "GetInterfaceAddresses fail";
+        BIN_LOG_ERROR(g_logger) << "GetInterfaceAddresses fail";
         return;
     }
 
     //将获取到的网址信息 逐一打印
     for(auto& i: results){
-        SYLAR_LOG_INFO(g_logger) << i.first << " - " << i.second.first->toString() << " - " << i.second.second;
+        BIN_LOG_INFO(g_logger) << i.first << " - " << i.second.first->toString() << " - " << i.second.second;
     }
 }
 
@@ -76,7 +76,7 @@ void test_createIPv4(){
     //auto addr = bin::IPAddress::Create("www.bin.top");
     auto addr = bin::IPAddress::Create("127.0.0.8");
     if(addr){
-        SYLAR_LOG_INFO(g_logger) << addr->toString();
+        BIN_LOG_INFO(g_logger) << addr->toString();
     }
 }
 

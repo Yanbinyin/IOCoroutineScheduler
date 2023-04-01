@@ -1,5 +1,5 @@
-#ifndef __SYLAR_HTTP_SESSION_DATA_H__
-#define __SYLAR_HTTP_SESSION_DATA_H__
+#ifndef __BIN_HTTP_SESSION_DATA_H__
+#define __BIN_HTTP_SESSION_DATA_H__
 
 #include "IOCoroutineScheduler/mutex.h"
 #include "IOCoroutineScheduler/singleton.h"

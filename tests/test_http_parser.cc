@@ -1,7 +1,7 @@
 #include "IOCoroutineScheduler/http/http_parser.h"
 #include "IOCoroutineScheduler/log.h"
 
-static bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static bin::Logger::ptr g_logger = BIN_LOG_ROOT();
 
 //power: string还有字符数组，可以用“” 无限拼接，string str = "str" "ing" "s"; //等价于string str = "strings";
 //这里是一个const char test_requeset_data[71];
@@ -14,14 +14,14 @@ void test_request(){
     bin::http::HttpRequestParser parser;
     std::string tmp = test_request_data;
     size_t s = parser.execute(&tmp[0], tmp.size()); //s: 解析的长度
-    SYLAR_LOG_ERROR(g_logger) << "execute rt=" << s
+    BIN_LOG_ERROR(g_logger) << "execute rt=" << s
             << "has_error=" << parser.hasError()
             << " is_finished=" << parser.isFinished()
             << " total=" << tmp.size()
             << " content_length=" << parser.getContentLength();
     tmp.resize(tmp.size() - s); //原来的长度减去解析的长度
-    SYLAR_LOG_INFO(g_logger) << parser.getData()->toString();
-    SYLAR_LOG_INFO(g_logger) << tmp;
+    BIN_LOG_INFO(g_logger) << parser.getData()->toString();
+    BIN_LOG_INFO(g_logger) << tmp;
 }
 
 
@@ -45,7 +45,7 @@ void test_response(){
     bin::http::HttpResponseParser parser;
     std::string tmp = test_response_data;
     size_t s = parser.execute(&tmp[0], tmp.size(), true);
-    SYLAR_LOG_ERROR(g_logger) << "execute rt=" << s
+    BIN_LOG_ERROR(g_logger) << "execute rt=" << s
             << " has_error=" << parser.hasError()
             << " is_finished=" << parser.isFinished()
             << " total=" << tmp.size()
@@ -54,13 +54,13 @@ void test_response(){
 
     tmp.resize(tmp.size() - s);
 
-    SYLAR_LOG_INFO(g_logger) << parser.getData()->toString();
-    SYLAR_LOG_INFO(g_logger) << tmp;
+    BIN_LOG_INFO(g_logger) << parser.getData()->toString();
+    BIN_LOG_INFO(g_logger) << tmp;
 }
 
 int main(int argc, char** argv){
     test_request();
-    SYLAR_LOG_INFO(g_logger) << "--------------";
+    BIN_LOG_INFO(g_logger) << "--------------";
     test_response();
     return 0;
 }

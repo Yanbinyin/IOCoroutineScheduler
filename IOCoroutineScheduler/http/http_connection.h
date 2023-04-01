@@ -1,7 +1,7 @@
 //HTTP客户端类
 
-#ifndef __SYLAR_HTTP_CONNECTION_H__
-#define __SYLAR_HTTP_CONNECTION_H__
+#ifndef __BIN_HTTP_CONNECTION_H__
+#define __BIN_HTTP_CONNECTION_H__
 
 #include "IOCoroutineScheduler/streams/socket_stream.h"
 #include "http.h"

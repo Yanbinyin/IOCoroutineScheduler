@@ -2,8 +2,8 @@
 //socket在socket.h的时候已经封装过了，那是对原始C API的封装，将C封装成类
 //socket_stream.h是socket业务级接口封装，逻辑里面都用stream，很少用裸的socket
 
-#ifndef __SYLAR_SOCKET_STREAM_H__
-#define __SYLAR_SOCKET_STREAM_H__
+#ifndef __BIN_SOCKET_STREAM_H__
+#define __BIN_SOCKET_STREAM_H__
 
 #include "IOCoroutineScheduler/stream.h"
 #include "IOCoroutineScheduler/socket.h"

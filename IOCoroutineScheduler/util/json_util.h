@@ -1,5 +1,5 @@
-#ifndef __SYLAR_UTIL_JSON_UTIL_H__
-#define __SYLAR_UTIL_JSON_UTIL_H__
+#ifndef __BIN_UTIL_JSON_UTIL_H__
+#define __BIN_UTIL_JSON_UTIL_H__
 
 #include <string>
 #include <iostream>

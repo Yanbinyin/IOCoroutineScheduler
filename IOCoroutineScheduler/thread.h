@@ -3,8 +3,8 @@
     std::thread也是基于pthread实现的
     c++11的std::thread没有提供读写锁，服务器高并发条件下很多情况读多写少，没有读写锁性能损失很大
 */
-#ifndef __SYLAR_THREAD_H__
-#define __SYLAR_THREAD_H__
+#ifndef __BIN_THREAD_H__
+#define __BIN_THREAD_H__
 
 
 #include "mutex.h"

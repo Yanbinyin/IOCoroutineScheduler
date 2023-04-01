@@ -1,5 +1,5 @@
-#ifndef __SYLAR_MUTEX_H__
-#define __SYLAR_MUTEX_H__
+#ifndef __BIN_MUTEX_H__
+#define __BIN_MUTEX_H__
 
 #include <thread>
 #include <functional>

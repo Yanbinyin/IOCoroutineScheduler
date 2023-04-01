@@ -2,8 +2,8 @@
 //利用已经封装好的HttpSession类，搭建一个简单的HTTP交互服务器。
 //接收HTTP请求报文，正确解析后，给客户端回发一个简单的响应报文，封装原来的请求报文
 
-#ifndef __SYLAR_HTTP_HTTP_SERVER_H__
-#define __SYLAR_HTTP_HTTP_SERVER_H__
+#ifndef __BIN_HTTP_HTTP_SERVER_H__
+#define __BIN_HTTP_HTTP_SERVER_H__
 
 #include "IOCoroutineScheduler/tcp_server.h"
 #include "http_session.h"

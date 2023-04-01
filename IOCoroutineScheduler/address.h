@@ -1,6 +1,6 @@
 //网络地址的封装(IPv4,IPv6,Unix)
-#ifndef __SYLAR_ADDRESS_H__
-#define __SYLAR_ADDRESS_H__
+#ifndef __BIN_ADDRESS_H__
+#define __BIN_ADDRESS_H__
 
 #include <memory>
 #include <string>

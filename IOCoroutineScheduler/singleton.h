@@ -1,5 +1,5 @@
-#ifndef __SYLAR_SINGLETON_H__
-#define __SYLAR_SINGLETON_H__
+#ifndef __BIN_SINGLETON_H__
+#define __BIN_SINGLETON_H__
 
 /*
     单例模式：
