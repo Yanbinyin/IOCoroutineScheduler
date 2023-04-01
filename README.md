@@ -17,7 +17,7 @@ _C++:_
 - `boost`   
 - `yaml` for setting configuration
 - `json` for setting configuration
-- `protobuf`
+- `protobuf` is alibrary from Google with a funny protocol data interchange format(similar to json, but more efficient in time and space)
 
 <strong>Usage</strong>  
 for C++, you need to compile first  
