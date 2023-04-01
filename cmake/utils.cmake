@@ -1,5 +1,3 @@
-# utils.cmake
-
 #重新定义当前目标的源文件的__FILE__宏
 function(redefine_file_macro targetname)
     #获取当前目标的所有源文件
