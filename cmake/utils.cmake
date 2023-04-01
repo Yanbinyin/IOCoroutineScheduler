@@ -74,7 +74,7 @@ endfunction(protobufmaker)
 
 
 # 精简了cmake编译test文件
-function(serverBin_add_executable targetname srcs depends libs)
+function(LibTim_add_executable targetname srcs depends libs)
     add_executable(${targetname} ${srcs})
     add_dependencies(${targetname} ${depends})
     redefine_file_macro(${targetname})

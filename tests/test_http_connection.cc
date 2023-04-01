@@ -1,21 +1,21 @@
 #include <iostream>
-#include "server-bin/http/http_connection.h"
-#include "server-bin/log.h"
-#include "server-bin/iomanager.h"
-#include "server-bin/http/http_parser.h"
-//#include "server-bin/streams/zlib_stream.h"
+#include "IOCoroutineScheduler/http/http_connection.h"
+#include "IOCoroutineScheduler/log.h"
+#include "IOCoroutineScheduler/iomanager.h"
+#include "IOCoroutineScheduler/http/http_parser.h"
+//#include "IOCoroutineScheduler/streams/zlib_stream.h"
 #include <fstream>
 
 
-static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
-static sylar::Logger::ptr g_logger2 = SYLAR_LOG_NAME("connect");
+static bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static bin::Logger::ptr g_logger2 = SYLAR_LOG_NAME("connect");
 
 
 void test_pool(){
-    sylar::http::HttpConnectionPool::ptr pool(new sylar::http::HttpConnectionPool(
-                "www.sylar.top", "", 80, false, 10, 1000 * 30, 5));
+    bin::http::HttpConnectionPool::ptr pool(new bin::http::HttpConnectionPool(
+                "www.bin.top", "", 80, false, 10, 1000 * 30, 5));
 
-    sylar::IOManager::GetThis()->addTimer(1000, [pool](){
+    bin::IOManager::GetThis()->addTimer(1000, [pool](){
             auto r = pool->doGet("/", 300);
             SYLAR_LOG_INFO(g_logger) << r->toString();
     }, true);
@@ -25,26 +25,26 @@ void test_pool(){
 //block2: 测试由服务器主动发起连接，是否能够正常接收chunck/非chunck响应报文
 void run(){
     //添加一个往文件输出的日志器
-    g_logger2->addAppender(sylar::LogAppender::ptr(new sylar::FileLogAppender("./connection.txt")));
+    g_logger2->addAppender(bin::LogAppender::ptr(new bin::FileLogAppender("./connection.txt")));
 
     //向该网站发起请求
-    sylar::Address::ptr addr = sylar::Address::LookupAnyIPAddress("www.sylar.top:80");
+    bin::Address::ptr addr = bin::Address::LookupAnyIPAddress("www.bin.top:80");
     if(!addr){
         SYLAR_LOG_INFO(g_logger) << "get addr error";
         return;
     }
 
-    sylar::Socket::ptr sock = sylar::Socket::CreateTCP(addr);
+    bin::Socket::ptr sock = bin::Socket::CreateTCP(addr);
     bool rt = sock->connect(addr);
     if(!rt){
         SYLAR_LOG_INFO(g_logger) << "connect " << *addr << " failed";
         return;
     }
 
-    sylar::http::HttpConnection::ptr conn(new sylar::http::HttpConnection(sock));
-    sylar::http::HttpRequest::ptr req(new sylar::http::HttpRequest);
-    req->setPath("/blog/"); //浏览器访问www.sylar.top，会加路径定向到www.sylar.top/blog/
-    req->setHeader("host", "www.sylar.top");
+    bin::http::HttpConnection::ptr conn(new bin::http::HttpConnection(sock));
+    bin::http::HttpRequest::ptr req(new bin::http::HttpRequest);
+    req->setPath("/blog/"); //浏览器访问www.bin.top，会加路径定向到www.bin.top/blog/
+    req->setHeader("host", "www.bin.top");
     SYLAR_LOG_INFO(g_logger) << "req:" << std::endl
         << *req;
 
@@ -64,7 +64,7 @@ void run(){
 
     SYLAR_LOG_INFO(g_logger) << "=========================";
 
-    auto r = sylar::http::HttpConnection::DoGet("http://www.sylar.top/blog/", 300);
+    auto r = bin::http::HttpConnection::DoGet("http://www.bin.top/blog/", 300);
     SYLAR_LOG_INFO(g_logger) << "result=" << r->result
         << " error=" << r->error
         << " rsp=" << (r->response ? r->response->toString() : "");
@@ -75,7 +75,7 @@ void run(){
 
 /*
 // void test_https(){
-//     auto r = sylar::http::HttpConnection::DoGet("http://www.baidu.com/", 300, {
+//     auto r = bin::http::HttpConnection::DoGet("http://www.baidu.com/", 300, {
 //                         {"Accept-Encoding", "gzip, deflate, br"},
 //                         {"Connection", "keep-alive"},
 //                         {"User-Agent", "curl/7.29.0"}
@@ -84,11 +84,11 @@ void run(){
 //         << " error=" << r->error
 //         << " rsp=" << (r->response ? r->response->toString() : "");
 //
-//     //sylar::http::HttpConnectionPool::ptr pool(new sylar::http::HttpConnectionPool(
+//     //bin::http::HttpConnectionPool::ptr pool(new bin::http::HttpConnectionPool(
 //     //            "www.baidu.com", "", 80, false, 10, 1000 * 30, 5));
-//     auto pool = sylar::http::HttpConnectionPool::Create(
+//     auto pool = bin::http::HttpConnectionPool::Create(
 //                     "https://www.baidu.com", "", 10, 1000 * 30, 5);
-//     sylar::IOManager::GetThis()->addTimer(1000, [pool](){
+//     bin::IOManager::GetThis()->addTimer(1000, [pool](){
 //             auto r = pool->doGet("/", 3000, {
 //                         {"Accept-Encoding", "gzip, deflate, br"},
 //                         {"User-Agent", "curl/7.29.0"}
@@ -98,8 +98,8 @@ void run(){
 // }
 
 // void test_data(){
-//     sylar::Address::ptr addr = sylar::Address::LookupAny("www.baidu.com:80");
-//     auto sock = sylar::Socket::CreateTCP(addr);
+//     bin::Address::ptr addr = bin::Address::LookupAny("www.baidu.com:80");
+//     auto sock = bin::Socket::CreateTCP(addr);
 //
 //     sock->connect(addr);
 //     const char buff[] = "GET / HTTP/1.1\r\n"
@@ -136,7 +136,7 @@ void run(){
 //     }
 //
 //     std::cout << "length: " << content.size() << " total: " << total << std::endl;
-//     sylar::http::HttpResponseParser parser;
+//     bin::http::HttpResponseParser parser;
 //     size_t nparse = parser.execute(&content[0], content.size(), false);
 //     std::cout << "finish: " << parser.isFinished() << std::endl;
 //     content.resize(content.size() - nparse);
@@ -159,7 +159,7 @@ void run(){
 //     std::cout << "total: " << body.size() << " content:" << cl << std::endl;
 //
 //     //todo:
-//     // sylar::ZlibStream::ptr stream = sylar::ZlibStream::CreateGzip(false);
+//     // bin::ZlibStream::ptr stream = bin::ZlibStream::CreateGzip(false);
 //     // stream->write(body.c_str(), body.size());
 //     // stream->flush();
 //
@@ -171,7 +171,7 @@ void run(){
 */
 
 int main(int argc, char** argv){
-    sylar::IOManager iom(2);
+    bin::IOManager iom(2);
     // iom.schedule(run);
     //iom.schedule(test_https);
     run();

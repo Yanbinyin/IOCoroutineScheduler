@@ -1,9 +1,9 @@
 #include<iostream>
 //#include<thread>
-#include"../server-bin/log.h"
-#include"../server-bin/util.h"
+#include"../IOCoroutineScheduler/log.h"
+#include"../IOCoroutineScheduler/util.h"
 
-using namespace sylar;
+using namespace bin;
 
 int main(){
     //实例化一个日志器 
@@ -30,22 +30,22 @@ int main(){
 
 // int main(){
 
-//     sylar::FileLogAppender::ptr file_appender(new sylar::FileLogAppender("./doc/log.txt"));
-//     sylar::LogFormatter::ptr fmt(new sylar::LogFormatter("%d%T%p%T%m%n"));
+//     bin::FileLogAppender::ptr file_appender(new bin::FileLogAppender("./doc/log.txt"));
+//     bin::LogFormatter::ptr fmt(new bin::LogFormatter("%d%T%p%T%m%n"));
 //     file_appender->setFormatter(fmt);
-//     file_appender->setLevel(sylar::LogLevel::UNKNOW);
+//     file_appender->setLevel(bin::LogLevel::UNKNOW);
 
 
 
-//     sylar::Logger::ptr logger(new sylar::Logger);
-//     //logger->addAppender(sylar::LogAppender::ptr(new sylar::StdoutLogAppender));
+//     bin::Logger::ptr logger(new bin::Logger);
+//     //logger->addAppender(bin::LogAppender::ptr(new bin::StdoutLogAppender));
 
 //     logger->addAppender(file_appender);
 
-//     // sylar::LogEvent::ptr event( new sylar::LogEvent( __FILE__, __LINE__, sylar::getThreadId(), sylar::GetFiberId(),0, 1, 2, time(0))," " );    
-//     // sylar::LogEvent::ptr event( new sylar::LogEvent( __FILE__, __LINE__, 0, std::this_thread::get_id(), 2, time(0))," " );
-//     // sylar::LogEvent::ptr event( new sylar::LogEvent( __FILE__, __LINE__, 0, sylar::GetThreadId(), sylar::GetFiberId(), time(0)));
-//     //logger->log(sylar::LogLevel::DEBUG, event);//输出
+//     // bin::LogEvent::ptr event( new bin::LogEvent( __FILE__, __LINE__, bin::getThreadId(), bin::GetFiberId(),0, 1, 2, time(0))," " );    
+//     // bin::LogEvent::ptr event( new bin::LogEvent( __FILE__, __LINE__, 0, std::this_thread::get_id(), 2, time(0))," " );
+//     // bin::LogEvent::ptr event( new bin::LogEvent( __FILE__, __LINE__, 0, bin::GetThreadId(), bin::GetFiberId(), time(0)));
+//     //logger->log(bin::LogLevel::DEBUG, event);//输出
 
 
 //     std::cout << "Hello, Bin log" << std::endl ;
@@ -56,7 +56,7 @@ int main(){
 //     SYLAR_LOG_ERROR(logger) << "test macro error";
 //     SYLAR_LOG_FMT_ERROR(logger, "test macro fmt error %s", "aa");
 
-//     auto l = sylar::LoggerMgr::GetInstance()->getLogger("xx");
+//     auto l = bin::LoggerMgr::GetInstance()->getLogger("xx");
 //     SYLAR_LOG_INFO(l) << "xxx";
 
 //     // SYLAR_LOG_INFO(file_appender) << "test macro";

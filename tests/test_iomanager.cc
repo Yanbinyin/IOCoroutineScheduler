@@ -1,4 +1,4 @@
-#include "server-bin/bin.h"
+#include "IOCoroutineScheduler/bin.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -7,7 +7,7 @@
 #include <iostream>
 #include <sys/epoll.h>
 
-sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("root");
+bin::Logger::ptr g_logger = SYLAR_LOG_NAME("root");
 
 
 //block1: 基础测试
@@ -22,10 +22,10 @@ void func2(){
 
 int main()
 {
-    sylar::Thread::SetName("test");
+    bin::Thread::SetName("test");
     //创建IO调度器
     SYLAR_LOG_INFO(g_logger) << "test begin";
-    sylar::IOManager iom;
+    bin::IOManager iom;
 	
     //添加函数任务
     SYLAR_LOG_INFO(g_logger) << "add func";
@@ -33,7 +33,7 @@ int main()
 	
     //添加协程任务
     SYLAR_LOG_INFO(g_logger) << "add Fiber";
-    sylar::Fiber::ptr cor(new sylar::Fiber(&func2));
+    bin::Fiber::ptr cor(new bin::Fiber(&func2));
     iom.schedule(cor);
 
     SYLAR_LOG_INFO(g_logger) << "test end";
@@ -63,7 +63,7 @@ void test_fiber(){
     //sleep(5);
 
     //close(sock);
-    //sylar::IOManager::GetThis()->cancelAll(sock);
+    //bin::IOManager::GetThis()->cancelAll(sock);
 
     //IPv4  TCP  无通信协议
     sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -79,12 +79,12 @@ void test_fiber(){
     if(!connect(sock, (const sockaddr*)&addr, sizeof(addr))){
     }else if(errno == EINPROGRESS){
         SYLAR_LOG_INFO(g_logger) << "add event errno=" << errno << " " << strerror(errno);
-        sylar::IOManager::GetThis()->addEvent(sock, sylar::IOManager::READ
+        bin::IOManager::GetThis()->addEvent(sock, bin::IOManager::READ
                     ,[](){ SYLAR_LOG_INFO(g_logger) << "read callback"; });
-        sylar::IOManager::GetThis()->addEvent(sock, sylar::IOManager::WRITE, [](){
+        bin::IOManager::GetThis()->addEvent(sock, bin::IOManager::WRITE, [](){
             SYLAR_LOG_INFO(g_logger) << "write callback";
             //close(sock);
-            sylar::IOManager::GetThis()->cancelEvent(sock, sylar::IOManager::READ);
+            bin::IOManager::GetThis()->cancelEvent(sock, bin::IOManager::READ);
             close(sock);
         });
     }else{
@@ -94,14 +94,14 @@ void test_fiber(){
 
 void test1(){
     std::cout << "EPOLLIN=" << EPOLLIN << " EPOLLOUT=" << EPOLLOUT << std::endl;
-    //sylar::IOManager iom(2, false);
-    sylar::IOManager iom(1, false);
+    //bin::IOManager iom(2, false);
+    bin::IOManager iom(1, false);
     iom.schedule(&test_fiber);
 }
 
-sylar::Timer::ptr s_timer;
+bin::Timer::ptr s_timer;
 void test_timer(){
-    sylar::IOManager iom(1);
+    bin::IOManager iom(1);
     s_timer = iom.addTimer(1000, [](){
         static int i = 0;
         SYLAR_LOG_INFO(g_logger) << "hello timer i=" << i;

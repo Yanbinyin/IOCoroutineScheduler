@@ -1,6 +1,6 @@
 # #测试配置系统和日志系统
 # cmake_minimum_required(VERSION 2.8)
-# project(ServerBin)
+# project(LibTim)
 
 # include (cmake/utils.cmake)
 
@@ -10,8 +10,8 @@
 # set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -std=c++11 -g -O0 -Wall -Wno-builtin-macro-redefined")
 
 # include_directories(.)
-# include_directories(/apps/ServerBin/include)   # yaml安装的文件夹，我好像安装在lib里面了，所以不需要
-# link_directories(/apps/ServerBin/lib)
+# include_directories(/apps/LibTim/include)   # yaml安装的文件夹，我好像安装在lib里面了，所以不需要
+# link_directories(/apps/LibTim/lib)
 
 # find_library(YAMLCPP yaml-cpp)
 # message("***"  ${YAMLCPP})
@@ -19,32 +19,32 @@
 # set(CMAKE_BUILD_TYPE Debug)
 
 # set(LIB_SRC
-#     ServerBin/log.cc
-#     ServerBin/util.cc
-#     ServerBin/config.cc
-#     ServerBin/thread.cc
+#     LibTim/log.cc
+#     LibTim/util.cc
+#     LibTim/config.cc
+#     LibTim/thread.cc
 #     )
 
-# add_library(ServerBin SHARED ${LIB_SRC})    #生成lib
-# redefine_file_macro(ServerBin)  #__FILE__
-# # add_library(ServerBin_static STATIC ${LIB_SRC})
-# # SET_TARGET_PROPERTIES(ServerBin_static PROPERTIONS OUTPUT_NAME "server-bin")
+# add_library(LibTim SHARED ${LIB_SRC})    #生成lib
+# redefine_file_macro(LibTim)  #__FILE__
+# # add_library(LibTim_static STATIC ${LIB_SRC})
+# # SET_TARGET_PROPERTIES(LibTim_static PROPERTIONS OUTPUT_NAME "IOCoroutineScheduler")
 
 # set(LIB_LIB
-#     ServerBin
+#     LibTim
 #     pthread
 #     ${YAMLCPP}
 #     )
 
 # add_executable(test tests/test.cc)      #生成测试文件
-# add_dependencies(test ServerBin)            #测试文件依赖于lib
+# add_dependencies(test LibTim)            #测试文件依赖于lib
 # redefine_file_macro(test)
-# target_link_libraries(test ServerBin ${LIB_LIB})
+# target_link_libraries(test LibTim ${LIB_LIB})
 
 # add_executable(test_config tests/test_config.cc)
-# add_dependencies(test_config ServerBin)
+# add_dependencies(test_config LibTim)
 # redefine_file_macro(test_config)
-# target_link_libraries(test_config ServerBin ${LIB_LIB})
+# target_link_libraries(test_config LibTim ${LIB_LIB})
 
 # set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 # set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
@@ -54,7 +54,7 @@
 
 # 测试线程系统
 cmake_minimum_required(VERSION 2.8)
-project(ServerBin)
+project(LibTim)
 
 include (cmake/utils.cmake)
 
@@ -64,54 +64,54 @@ set(CMAKE_VERSION_FILE ON)  #make过程中显示详细命令
 set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -std=c++11 -g -O0 -Wall -Wno-builtin-macro-redefined")
 
 include_directories(.)
-include_directories(/apps/ServerBin/include)   # yaml安装的文件夹，我好像安装在lib里面了，所以不需要
-link_directories(/apps/ServerBin/lib)
+include_directories(/apps/LibTim/include)   # yaml安装的文件夹，我好像安装在lib里面了，所以不需要
+link_directories(/apps/LibTim/lib)
 
 set(CMAKE_BUILD_TYPE Debug)
 
 set(LIB_SRC 
-    server-bin/address.cc
-    server-bin/bytearray.cc
-    server-bin/config.cc
-    server-bin/coroutine.cc
-    server-bin/fd_manager.cc
-    server-bin/hook.cc
-    server-bin/http/http.cc
-    server-bin/http/http_parser.cc
-    # server-bin/http/http11_parser.rl.cc
-    # server-bin/http/httpclient_parser.rl.cc
-    server-bin/http/http_connection.cc
-    server-bin/http/http_server.cc
-    server-bin/http/http_session.cc
-    server-bin/http/servlet.cc
-    # server-bin/http/servlet/config_servlet.cc
-    # server-bin/http/servlet/status_servlet.cc
-    server-bin/iomanager.cc
-    server-bin/log.cc
-    server-bin/mutex.cc
-    server-bin/scheduler.cc
-    server-bin/socket.cc
-    server-bin/stream.cc
-    # server-bin/streams/zlib_stream.cc
-    server-bin/streams/socket_stream.cc
-    server-bin/thread.cc
-    server-bin/timer.cc
-    server-bin/tcp_server.cc
-    # server-bin/uri.rl.cpp
-    server-bin/util.cc
-    server-bin/util/crypto_util.cc
-    server-bin/util/json_util.cc
-    server-bin/util/hash_util.cc
+    IOCoroutineScheduler/address.cc
+    IOCoroutineScheduler/bytearray.cc
+    IOCoroutineScheduler/config.cc
+    IOCoroutineScheduler/coroutine.cc
+    IOCoroutineScheduler/fd_manager.cc
+    IOCoroutineScheduler/hook.cc
+    IOCoroutineScheduler/http/http.cc
+    IOCoroutineScheduler/http/http_parser.cc
+    # IOCoroutineScheduler/http/http11_parser.rl.cc
+    # IOCoroutineScheduler/http/httpclient_parser.rl.cc
+    IOCoroutineScheduler/http/http_connection.cc
+    IOCoroutineScheduler/http/http_server.cc
+    IOCoroutineScheduler/http/http_session.cc
+    IOCoroutineScheduler/http/servlet.cc
+    # IOCoroutineScheduler/http/servlet/config_servlet.cc
+    # IOCoroutineScheduler/http/servlet/status_servlet.cc
+    IOCoroutineScheduler/iomanager.cc
+    IOCoroutineScheduler/log.cc
+    IOCoroutineScheduler/mutex.cc
+    IOCoroutineScheduler/scheduler.cc
+    IOCoroutineScheduler/socket.cc
+    IOCoroutineScheduler/stream.cc
+    # IOCoroutineScheduler/streams/zlib_stream.cc
+    IOCoroutineScheduler/streams/socket_stream.cc
+    IOCoroutineScheduler/thread.cc
+    IOCoroutineScheduler/timer.cc
+    IOCoroutineScheduler/tcp_server.cc
+    # IOCoroutineScheduler/uri.rl.cpp
+    IOCoroutineScheduler/util.cc
+    IOCoroutineScheduler/util/crypto_util.cc
+    IOCoroutineScheduler/util/json_util.cc
+    IOCoroutineScheduler/util/hash_util.cc
 )
 
-ragelmaker(server-bin/http/http11_parser.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/server-bin/http)
-ragelmaker(server-bin/http/httpclient_parser.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/server-bin/http)
-ragelmaker(server-bin/uri.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/server-bin)
+ragelmaker(IOCoroutineScheduler/http/http11_parser.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/IOCoroutineScheduler/http)
+ragelmaker(IOCoroutineScheduler/http/httpclient_parser.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/IOCoroutineScheduler/http)
+ragelmaker(IOCoroutineScheduler/uri.rl LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/IOCoroutineScheduler)
 
-add_library(ServerBin SHARED ${LIB_SRC})    #生成lib
-redefine_file_macro(ServerBin)  #__FILE__
-# add_library(ServerBin_static STATIC ${LIB_SRC})
-# SET_TARGET_PROPERTIES(ServerBin_static PROPERTIONS OUTPUT_NAME "server-bin")
+add_library(LibTim SHARED ${LIB_SRC})    #生成lib
+redefine_file_macro(LibTim)  #__FILE__
+# add_library(LibTim_static STATIC ${LIB_SRC})
+# SET_TARGET_PROPERTIES(LibTim_static PROPERTIONS OUTPUT_NAME "IOCoroutineScheduler")
 
 
 find_library(YAMLCPP yaml-cpp)
@@ -120,7 +120,7 @@ find_library(PTHREAD pthread)
 
 
 set(LIBS
-    ServerBin
+    LibTim
     dl #编译 dlsym（man dlsym查看）
     pthread
     yaml-cpp
@@ -131,7 +131,7 @@ set(LIBS
 
 message("***"  ${LIBS})
 
-# function(serverBin_add_executable targetname srcs depends libs)
+# function(LibTim_add_executable targetname srcs depends libs)
 #     add_executable(${targetname} ${srcs})
 #     add_dependencies(${targetname} ${depends})
 #     force_redefine_file_macro_for_sources(${targetname})
@@ -139,86 +139,86 @@ message("***"  ${LIBS})
 # endfunction()
 ###########  相当于下面的示例  #################
 # add_executable(test tests/test.cc)      #生成测试文件
-# add_dependencies(test ServerBin)            #测试文件依赖于lib
+# add_dependencies(test LibTim)            #测试文件依赖于lib
 # redefine_file_macro(test)
 # target_link_libraries(test ${LIBS})
 
-serverBin_add_executable(test_http_server "tests/test_http_server.cc" sylar "${LIBS}")
-serverBin_add_executable(test_http_connection "tests/test_http_connection.cc" sylar "${LIBS}")
-serverBin_add_executable(test_uri "tests/test_uri.cc" sylar "${LIBS}")
+LibTim_add_executable(test_http_server "tests/test_http_server.cc" bin "${LIBS}")
+LibTim_add_executable(test_http_connection "tests/test_http_connection.cc" bin "${LIBS}")
+LibTim_add_executable(test_uri "tests/test_uri.cc" bin "${LIBS}")
 
 add_executable(test tests/test.cc)      #生成测试文件
-add_dependencies(test ServerBin)            #测试文件依赖于lib
+add_dependencies(test LibTim)            #测试文件依赖于lib
 redefine_file_macro(test)
 target_link_libraries(test ${LIBS})
 
 add_executable(test_config tests/test_config.cc)
-add_dependencies(test_config ServerBin)
+add_dependencies(test_config LibTim)
 redefine_file_macro(test_config)
 target_link_libraries(test_config ${LIBS})
 
 add_executable(test_thread tests/test_thread.cc)
-add_dependencies(test_thread ServerBin)
+add_dependencies(test_thread LibTim)
 redefine_file_macro(test_thread)
 target_link_libraries(test_thread ${LIBS})
 
 add_executable(test_util tests/test_util.cc)
-add_dependencies(test_util ServerBin)
+add_dependencies(test_util LibTim)
 redefine_file_macro(test_util)
 target_link_libraries(test_util ${LIBS})
 
 add_executable(test_coroutine tests/test_coroutine.cc)
-add_dependencies(test_coroutine ServerBin)
+add_dependencies(test_coroutine LibTim)
 redefine_file_macro(test_coroutine)
 target_link_libraries(test_coroutine ${LIBS})
 
 add_executable(test_hook tests/test_hook.cc)
-add_dependencies(test_hook ServerBin)
+add_dependencies(test_hook LibTim)
 redefine_file_macro(test_hook)
 target_link_libraries(test_hook ${LIBS})
 
 add_executable(test_scheduler tests/test_scheduler.cc)
-add_dependencies(test_scheduler ServerBin)
+add_dependencies(test_scheduler LibTim)
 redefine_file_macro(test_scheduler)
 target_link_libraries(test_scheduler ${LIBS})
 
 add_executable(test_iomanager tests/test_iomanager.cc)
-add_dependencies(test_iomanager ServerBin)
+add_dependencies(test_iomanager LibTim)
 redefine_file_macro(test_iomanager)
 target_link_libraries(test_iomanager ${LIBS})
 
 add_executable(test_address tests/test_address.cc)
-add_dependencies(test_address ServerBin)
+add_dependencies(test_address LibTim)
 redefine_file_macro(test_address)
 target_link_libraries(test_address ${LIBS})
 
 add_executable(test_socket tests/test_socket.cc)
-add_dependencies(test_socket ServerBin)
+add_dependencies(test_socket LibTim)
 redefine_file_macro(test_socket)
 target_link_libraries(test_socket ${LIBS})
 
 add_executable(test_bytearray tests/test_bytearray.cc)
-add_dependencies(test_bytearray ServerBin)
+add_dependencies(test_bytearray LibTim)
 redefine_file_macro(test_bytearray)
 target_link_libraries(test_bytearray ${LIBS})
 
 add_executable(test_http tests/test_http.cc)
-add_dependencies(test_http ServerBin)
+add_dependencies(test_http LibTim)
 redefine_file_macro(test_http)
 target_link_libraries(test_http ${LIBS})
 
 add_executable(test_http_parser tests/test_http_parser.cc)
-add_dependencies(test_http_parser ServerBin)
+add_dependencies(test_http_parser LibTim)
 redefine_file_macro(test_http_parser)
 target_link_libraries(test_http_parser ${LIBS})
 
 add_executable(test_tcp_server tests/test_tcp_server.cc)
-add_dependencies(test_tcp_server ServerBin)
+add_dependencies(test_tcp_server LibTim)
 redefine_file_macro(test_tcp_server)
 target_link_libraries(test_tcp_server ${LIBS})
 
 add_executable(echo_server examples/echo_server.cc)
-add_dependencies(echo_server ServerBin)
+add_dependencies(echo_server LibTim)
 redefine_file_macro(echo_server)
 target_link_libraries(echo_server ${LIBS})
 

@@ -1,10 +1,10 @@
-#include "server-bin/tcp_server.h"
-#include "server-bin/log.h"
-#include "server-bin/iomanager.h"
-#include "server-bin/bytearray.h"
-#include "server-bin/address.h"
+#include "IOCoroutineScheduler/tcp_server.h"
+#include "IOCoroutineScheduler/log.h"
+#include "IOCoroutineScheduler/iomanager.h"
+#include "IOCoroutineScheduler/bytearray.h"
+#include "IOCoroutineScheduler/address.h"
 
-static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
 
 /*目的：构建一个相对标准的对这一套服务器框架接口使用的小实例，以加强对接口使用的理解以及排错
 
@@ -32,10 +32,10 @@ shell输入 ../echo_server -t 运行应用
 */
 
 //block: 类部分
-class EchoServer : public sylar::TcpServer {
+class EchoServer : public bin::TcpServer {
 public:
     EchoServer(int type);
-    void handleClient(sylar::Socket::ptr client) override;  //重写TCPServer类的虚函数 处理已经连接的客户端  完成数据交互通信
+    void handleClient(bin::Socket::ptr client) override;  //重写TCPServer类的虚函数 处理已经连接的客户端  完成数据交互通信
 
 private:
     int m_type = 0; //标识输出的内容是二进制还是文本，二进制的toString转成HEX进制输出
@@ -46,9 +46,9 @@ EchoServer::EchoServer(int type)
     :m_type(type){
 }
 
-void EchoServer::handleClient(sylar::Socket::ptr client){
+void EchoServer::handleClient(bin::Socket::ptr client){
     SYLAR_LOG_INFO(g_logger) << "handleClient " << *client;   
-    sylar::ByteArray::ptr ba(new sylar::ByteArray);
+    bin::ByteArray::ptr ba(new bin::ByteArray);
     while(true){
         ba->clear();
         std::vector<iovec> iovs;
@@ -81,7 +81,7 @@ int type = 1;
 void run(){
     SYLAR_LOG_INFO(g_logger) << "server type=" << type;
     EchoServer::ptr es(new EchoServer(type));
-    auto addr = sylar::Address::LookupAny("0.0.0.0:8888");
+    auto addr = bin::Address::LookupAny("0.0.0.0:8888");
     while(!es->bind(addr)){
         sleep(2);
     }
@@ -103,7 +103,7 @@ int main(int argc, char** argv){
         type = 2;
     }
 
-    sylar::IOManager iom(2);
+    bin::IOManager iom(2);
     iom.schedule(run);
     return 0;
 }

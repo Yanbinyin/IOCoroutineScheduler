@@ -1,7 +1,7 @@
-#include "server-bin/bytearray.h"
-#include "server-bin/bin.h"
+#include "IOCoroutineScheduler/bytearray.h"
+#include "IOCoroutineScheduler/bin.h"
 
-static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
 
 void test(){
 #define XX(type, len, write_fun, read_fun, base_len){\
@@ -9,7 +9,7 @@ void test(){
     /*1.生成一个随机数组，创建Bytearray对象（开辟一块动态内存空间）*/ \
     for(int i = 0; i < len; ++i) \
         vec.push_back(rand()); /*rand()产生[0, 99]的整数*/\
-    sylar::ByteArray::ptr ba(new sylar::ByteArray(base_len)); \
+    bin::ByteArray::ptr ba(new bin::ByteArray(base_len)); \
     /*2.依次将数组内容写入内存空间*/\
     for(auto& i : vec) \
         ba->write_fun(i); \
@@ -48,7 +48,7 @@ void test(){
     for(int i = 0; i < len; ++i){ \
         vec.push_back(rand()); \
     } \
-    sylar::ByteArray::ptr ba(new sylar::ByteArray(base_len)); \
+    bin::ByteArray::ptr ba(new bin::ByteArray(base_len)); \
     for(auto& i : vec){ \
         ba->write_fun(i); \
     } \
@@ -63,7 +63,7 @@ void test(){
     /*想对于上一个的不同体现在下面这些方面*/ \
     ba->setPosition(0); \
     SYLAR_ASSERT(ba->writeToFile("/tmp/" #type "_" #len "-" #read_fun ".dat")); \
-    sylar::ByteArray::ptr ba2(new sylar::ByteArray(base_len * 2)); \
+    bin::ByteArray::ptr ba2(new bin::ByteArray(base_len * 2)); \
     SYLAR_ASSERT(ba2->readFromFile("/tmp/" #type "_" #len "-" #read_fun ".dat")); \
     ba2->setPosition(0); \
     SYLAR_ASSERT(ba->toString() == ba2->toString()); \

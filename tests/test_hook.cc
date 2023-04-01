@@ -1,7 +1,7 @@
-// #include "../server-bin/hook.h"
-// #include "server-bin/log.h"
-// #include "server-bin/iomanager.h"
-#include "server-bin/bin.h"
+// #include "../IOCoroutineScheduler/hook.h"
+// #include "IOCoroutineScheduler/log.h"
+// #include "IOCoroutineScheduler/iomanager.h"
+#include "IOCoroutineScheduler/bin.h"
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <string.h>
 
-sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
 
 
 /*//block1: 测试休眠
@@ -20,7 +20,7 @@ sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
     如果在3s内两个协程都能运行完毕，说明休眠函数HOOK成功。否则，线程级别休眠，应该是5s才能运行完毕。
 */
 void test_sleep(){
-    sylar::IOManager iom(1);
+    bin::IOManager iom(1);
     iom.schedule([](){
         sleep(5);
         SYLAR_LOG_INFO(g_logger) << "sleep 2";
@@ -77,7 +77,7 @@ void test_sock(){
 int main(){
     test_sleep();
 
-    //sylar::IOManager iom;
+    //bin::IOManager iom;
     //iom.schedule(test_sock);
     return 0;
 }

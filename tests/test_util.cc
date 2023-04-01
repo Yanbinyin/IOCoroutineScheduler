@@ -1,7 +1,7 @@
-#include "../server-bin/bin.h"
+#include "../IOCoroutineScheduler/bin.h"
 #include <assert.h>
 
-sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
 
 /*
     assert宏的原型定义在<assert.h>中，其原型定义：
@@ -12,8 +12,8 @@ sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
     然后通过调用 abort 来终止程序运行。
 */
 void test_assert(){
-    // SYLAR_LOG_INFO(g_logger) << sylar::BacktraceToString(10, 0, "  ");
-    SYLAR_LOG_INFO(g_logger) << sylar::BacktraceToString(10);   //默认形参，skip = 2，跳两层，相比上面输出简洁清爽
+    // SYLAR_LOG_INFO(g_logger) << bin::BacktraceToString(10, 0, "  ");
+    SYLAR_LOG_INFO(g_logger) << bin::BacktraceToString(10);   //默认形参，skip = 2，跳两层，相比上面输出简洁清爽
     
     //测试单纯assert
     // assert(0);

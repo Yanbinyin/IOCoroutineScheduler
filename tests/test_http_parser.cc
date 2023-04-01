@@ -1,17 +1,17 @@
-#include "server-bin/http/http_parser.h"
-#include "server-bin/log.h"
+#include "IOCoroutineScheduler/http/http_parser.h"
+#include "IOCoroutineScheduler/log.h"
 
-static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
 
 //power: string还有字符数组，可以用“” 无限拼接，string str = "str" "ing" "s"; //等价于string str = "strings";
 //这里是一个const char test_requeset_data[71];
 const char test_request_data[] = "POST / HTTP/1.1\r\n"
-                                "Host: www.sylar.top\r\n"
+                                "Host: www.bin.top\r\n"
                                 "Content-Length: 10\r\n\r\n" //power: head和body之间有一个空行，打印出来空两行是因为日志结束也默认空一行
                                 "1234567890";
 
 void test_request(){
-    sylar::http::HttpRequestParser parser;
+    bin::http::HttpRequestParser parser;
     std::string tmp = test_request_data;
     size_t s = parser.execute(&tmp[0], tmp.size()); //s: 解析的长度
     SYLAR_LOG_ERROR(g_logger) << "execute rt=" << s
@@ -42,7 +42,7 @@ const char test_response_data[] = "HTTP/1.1 200 OK\r\n"
         "</html>\r\n";
 
 void test_response(){
-    sylar::http::HttpResponseParser parser;
+    bin::http::HttpResponseParser parser;
     std::string tmp = test_response_data;
     size_t s = parser.execute(&tmp[0], tmp.size(), true);
     SYLAR_LOG_ERROR(g_logger) << "execute rt=" << s

@@ -1,22 +1,22 @@
-#include "server-bin/socket.h"
-#include "server-bin/bin.h"
-#include "server-bin/iomanager.h"
+#include "IOCoroutineScheduler/socket.h"
+#include "IOCoroutineScheduler/bin.h"
+#include "IOCoroutineScheduler/iomanager.h"
 
-static sylar::Logger::ptr g_looger = SYLAR_LOG_ROOT();
+static bin::Logger::ptr g_looger = SYLAR_LOG_ROOT();
 
 void test_socket(){
-    //std::vector<sylar::Address::ptr> addrs;
-    //sylar::Address::Lookup(addrs, "www.baidu.com", AF_INET);
-    //sylar::IPAddress::ptr addr;
+    //std::vector<bin::Address::ptr> addrs;
+    //bin::Address::Lookup(addrs, "www.baidu.com", AF_INET);
+    //bin::IPAddress::ptr addr;
     //for(auto& i : addrs){
     //    SYLAR_LOG_INFO(g_looger) << i->toString();
-    //    addr = std::dynamic_pointer_cast<sylar::IPAddress>(i);
+    //    addr = std::dynamic_pointer_cast<bin::IPAddress>(i);
     //    if(addr){
     //        break;
     //    }
     //}
     //域名转IP地址
-    sylar::IPAddress::ptr addr = sylar::Address::LookupAnyIPAddress("www.baidu.com");
+    bin::IPAddress::ptr addr = bin::Address::LookupAnyIPAddress("www.baidu.com");
     if(addr){
         SYLAR_LOG_INFO(g_looger) << "get address: " << addr->toString();
     }else{
@@ -25,7 +25,7 @@ void test_socket(){
     }
 
     //指定地址创建一个TCP连接
-    sylar::Socket::ptr sock = sylar::Socket::CreateTCP(addr);
+    bin::Socket::ptr sock = bin::Socket::CreateTCP(addr);
     addr->setPort(80);
     SYLAR_LOG_INFO(g_looger) << "addr=" << addr->toString();
 
@@ -60,7 +60,7 @@ void test_socket(){
 }
 
 void test2(){
-    sylar::IPAddress::ptr addr = sylar::Address::LookupAnyIPAddress("www.baidu.com:80");
+    bin::IPAddress::ptr addr = bin::Address::LookupAnyIPAddress("www.baidu.com:80");
     if(addr){
         SYLAR_LOG_INFO(g_looger) << "get address: " << addr->toString();
     }else{
@@ -68,7 +68,7 @@ void test2(){
         return;
     }
 
-    sylar::Socket::ptr sock = sylar::Socket::CreateTCP(addr);
+    bin::Socket::ptr sock = bin::Socket::CreateTCP(addr);
     if(!sock->connect(addr)){
         SYLAR_LOG_ERROR(g_looger) << "connect " << addr->toString() << " fail";
         return;
@@ -76,7 +76,7 @@ void test2(){
         SYLAR_LOG_INFO(g_looger) << "connect " << addr->toString() << " connected";
     }
 
-    uint64_t ts = sylar::GetCurrentUS();
+    uint64_t ts = bin::GetCurrentUS();
     for(size_t i = 0; i < 10000000000ul; ++i){
         if(int err = sock->getError()){
             SYLAR_LOG_INFO(g_looger) << "err=" << err << " errstr=" << strerror(err);
@@ -94,7 +94,7 @@ void test2(){
         //}
         static int batch = 10000000;
         if(i && (i % batch) == 0){
-            uint64_t ts2 = sylar::GetCurrentUS();
+            uint64_t ts2 = bin::GetCurrentUS();
             SYLAR_LOG_INFO(g_looger) << "i=" << i << " used: " << ((ts2 - ts) * 1.0 / batch) << " us";
             ts = ts2;
         }
@@ -102,7 +102,7 @@ void test2(){
 }
 
 int main(int argc, char** argv){
-    sylar::IOManager iom;
+    bin::IOManager iom;
     //iom.schedule(&test_socket);
     iom.schedule(&test2);
     return 0;

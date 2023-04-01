@@ -1,25 +1,25 @@
-#include "server-bin/socket.h"
-#include "server-bin/iomanager.h"
-#include "server-bin/log.h"
+#include "IOCoroutineScheduler/socket.h"
+#include "IOCoroutineScheduler/iomanager.h"
+#include "IOCoroutineScheduler/log.h"
 #include <stdlib.h>
 
-static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
 
 const char* ip = nullptr;
 uint16_t port = 0;
 
 void run(){
-    sylar::IPAddress::ptr addr = sylar::Address::LookupAnyIPAddress(ip);
+    bin::IPAddress::ptr addr = bin::Address::LookupAnyIPAddress(ip);
     if(!addr){
         SYLAR_LOG_ERROR(g_logger) << "invalid ip: " << ip;
         return;
     }
     addr->setPort(port);
 
-    sylar::Socket::ptr sock = sylar::Socket::CreateUDP(addr);
+    bin::Socket::ptr sock = bin::Socket::CreateUDP(addr);
 
-    sylar::IOManager::GetThis()->schedule([sock](){
-            sylar::Address::ptr addr(new sylar::IPv4Address);
+    bin::IOManager::GetThis()->schedule([sock](){
+            bin::Address::ptr addr(new bin::IPv4Address);
             SYLAR_LOG_INFO(g_logger) << "begin recv";
             while(true){
                 char buff[1024];
@@ -56,7 +56,7 @@ int main(int argc, char** argv){
     }
     ip = argv[1];
     port = atoi(argv[2]);
-    sylar::IOManager iom(2);
+    bin::IOManager iom(2);
     iom.schedule(run);
     return 0;
 }

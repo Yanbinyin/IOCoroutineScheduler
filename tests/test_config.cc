@@ -1,5 +1,5 @@
-#include "../server-bin/config.h"
-#include "../server-bin/log.h"
+#include "../IOCoroutineScheduler/config.h"
+#include "../IOCoroutineScheduler/log.h"
 #include <yaml-cpp/yaml.h>
 #include <iostream>
 
@@ -10,17 +10,17 @@
         正常情况下，系统配置几百个，真正需要调整的不多，设置优于配置减少很多工作量
 */
 //基本数据类型
-sylar::ConfigVar<int>::ptr g_int_value_config = sylar::Config::Lookup("system.port", (int)8080, "system port");
+bin::ConfigVar<int>::ptr g_int_value_config = bin::Config::Lookup("system.port", (int)8080, "system port");
 //检验Config Lookup函数tmp不存在时的报错
-sylar::ConfigVar<float>::ptr g_int_valuex_config = sylar::Config::Lookup("system.port", (float)8080, "system port");    //检测 ConfigVar<T>::ptr Lookup（……）函数
-sylar::ConfigVar<float>::ptr g_float_value_config = sylar::Config::Lookup("system.value", (float)10.2f, "system value");
+bin::ConfigVar<float>::ptr g_int_valuex_config = bin::Config::Lookup("system.port", (float)8080, "system port");    //检测 ConfigVar<T>::ptr Lookup（……）函数
+bin::ConfigVar<float>::ptr g_float_value_config = bin::Config::Lookup("system.value", (float)10.2f, "system value");
 //STL容器
-sylar::ConfigVar<std::vector<int> >::ptr g_int_vec_value_config = sylar::Config::Lookup("system.int_vec", std::vector<int>{1,2}, "system int vec");
-sylar::ConfigVar<std::list<int> >::ptr g_int_list_value_config = sylar::Config::Lookup("system.int_list", std::list<int>{1,2}, "system int list");
-sylar::ConfigVar<std::set<int> >::ptr g_int_set_value_config = sylar::Config::Lookup("system.int_set", std::set<int>{1,2}, "system int set");
-sylar::ConfigVar<std::unordered_set<int> >::ptr g_int_uset_value_config = sylar::Config::Lookup("system.int_uset", std::unordered_set<int>{1,2}, "system int uset");
-sylar::ConfigVar<std::map<std::string, int> >::ptr g_str_int_map_value_config = sylar::Config::Lookup("system.str_int_map", std::map<std::string, int>{{"k", 2}}, "system str int map");
-sylar::ConfigVar<std::unordered_map<std::string, int> >::ptr g_str_int_umap_value_config = sylar::Config::Lookup("system.str_int_umap", std::unordered_map<std::string, int>{{"k", 2}}, "system str int umap");
+bin::ConfigVar<std::vector<int> >::ptr g_int_vec_value_config = bin::Config::Lookup("system.int_vec", std::vector<int>{1,2}, "system int vec");
+bin::ConfigVar<std::list<int> >::ptr g_int_list_value_config = bin::Config::Lookup("system.int_list", std::list<int>{1,2}, "system int list");
+bin::ConfigVar<std::set<int> >::ptr g_int_set_value_config = bin::Config::Lookup("system.int_set", std::set<int>{1,2}, "system int set");
+bin::ConfigVar<std::unordered_set<int> >::ptr g_int_uset_value_config = bin::Config::Lookup("system.int_uset", std::unordered_set<int>{1,2}, "system int uset");
+bin::ConfigVar<std::map<std::string, int> >::ptr g_str_int_map_value_config = bin::Config::Lookup("system.str_int_map", std::map<std::string, int>{{"k", 2}}, "system str int map");
+bin::ConfigVar<std::unordered_map<std::string, int> >::ptr g_str_int_umap_value_config = bin::Config::Lookup("system.str_int_umap", std::unordered_map<std::string, int>{{"k", 2}}, "system str int umap");
 
 
 void print_yaml(const YAML::Node& node, int level){
@@ -82,7 +82,7 @@ void test_config(){
 
     //YAML::Node root = YAML::LoadFile("../bin/conf/log.yml" );
     YAML::Node root = YAML::LoadFile("../bin/conf/test.yml" );
-    sylar::Config::LoadFromYaml(root);
+    bin::Config::LoadFromYaml(root);
     
     SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "after:" << g_int_value_config->getValue();
     SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "after:" << g_float_value_config->toString();
@@ -122,7 +122,7 @@ public:
 };
 
 
-namespace sylar{
+namespace bin{
     template<>
     class LexicalCast<std::string, Person>{
     public:
@@ -159,11 +159,11 @@ namespace sylar{
 
 
 //test Person
-sylar::ConfigVar<Person>::ptr g_person = sylar::Config::Lookup("class.person", Person(), "system person");
+bin::ConfigVar<Person>::ptr g_person = bin::Config::Lookup("class.person", Person(), "system person");
 //test Map<string, Person>
-sylar::ConfigVar<std::map<std::string, Person> >::ptr g_person_map = sylar::Config::Lookup("class.map", std::map<std::string, Person>(), "system person");
+bin::ConfigVar<std::map<std::string, Person> >::ptr g_person_map = bin::Config::Lookup("class.map", std::map<std::string, Person>(), "system person");
 //test map<string, vector<Person> > >
-sylar::ConfigVar<std::map<std::string, std::vector<Person> > >::ptr g_person_vec_map = sylar::Config::Lookup("class.vec_map", std::map<std::string, std::vector<Person>>(), "system person");
+bin::ConfigVar<std::map<std::string, std::vector<Person> > >::ptr g_person_vec_map = bin::Config::Lookup("class.vec_map", std::map<std::string, std::vector<Person>>(), "system person");
 
 void test_class(){
 
@@ -188,7 +188,7 @@ void test_class(){
     std::cout << std::endl << "-----ReadFile:" << std::endl;
     YAML::Node root = YAML::LoadFile("../bin/conf/test.yml");
     std::cout << "一旦g_person被修改，addListener就会打印变化：" << std::endl; 
-    sylar::Config::LoadFromYaml(root);
+    bin::Config::LoadFromYaml(root);
 
     std::cout << std::endl << "------After:" << std::endl;
     SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << g_person->getValue().toString() << " - " << g_person->toString();
@@ -201,17 +201,17 @@ void test_class(){
 
 
 void test_log(){    
-    static sylar::Logger::ptr system_log = SYLAR_LOG_NAME("system");
+    static bin::Logger::ptr system_log = SYLAR_LOG_NAME("system");
     ////查看system的 level 和 name
-    // std::cout << "system level:" << sylar::LogLevel::ToString(system_log->getLevel()) << ", system name:" << system_log->getName() << std::endl;
+    // std::cout << "system level:" << bin::LogLevel::ToString(system_log->getLevel()) << ", system name:" << system_log->getName() << std::endl;
     SYLAR_LOG_INFO(system_log) << "hello system";
-    std::cout << "before: " << std::endl << sylar::LoggerMgr::GetInstance()->toYamlString() << std::endl;
+    std::cout << "before: " << std::endl << bin::LoggerMgr::GetInstance()->toYamlString() << std::endl;
     
     YAML::Node root = YAML::LoadFile("../bin/conf/log.yml");
-    sylar::Config::LoadFromYaml(root);
+    bin::Config::LoadFromYaml(root);
     std::cout << "====================" << std::endl;
     
-    std::cout << "After:" << std::endl << sylar::LoggerMgr::GetInstance()->toYamlString() << std::endl;
+    std::cout << "After:" << std::endl << bin::LoggerMgr::GetInstance()->toYamlString() << std::endl;
     std::cout << "====================" << std::endl;
     std::cout << root << std::endl;
     SYLAR_LOG_INFO(system_log) << "hello system";

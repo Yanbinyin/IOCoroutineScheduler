@@ -1,18 +1,18 @@
-#include "server-bin/http/http.h"
-#include "server-bin/log.h"
+#include "IOCoroutineScheduler/http/http.h"
+#include "IOCoroutineScheduler/log.h"
 
 void test_request(){
-    sylar::http::HttpRequest::ptr req(new sylar::http::HttpRequest);
-    req->setHeader("host" , "www.sylar.top");
-    req->setBody("hello sylar");
+    bin::http::HttpRequest::ptr req(new bin::http::HttpRequest);
+    req->setHeader("host" , "www.bin.top");
+    req->setBody("hello bin");
     req->dump(std::cout) << std::endl;
 }
 
 void test_response(){
-    sylar::http::HttpResponse::ptr rsp(new sylar::http::HttpResponse);
-    rsp->setHeader("X-X", "server-bin");
-    rsp->setBody("hello sylar");
-    rsp->setStatus((sylar::http::HttpStatus)400);   //枚举类要强制类型转换，不然报错
+    bin::http::HttpResponse::ptr rsp(new bin::http::HttpResponse);
+    rsp->setHeader("X-X", "IOCoroutineScheduler");
+    rsp->setBody("hello bin");
+    rsp->setStatus((bin::http::HttpStatus)400);   //枚举类要强制类型转换，不然报错
     rsp->setClose(false);
 
     rsp->dump(std::cout) << std::endl;

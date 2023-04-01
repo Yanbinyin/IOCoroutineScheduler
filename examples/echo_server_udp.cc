@@ -1,12 +1,12 @@
-#include "server-bin/socket.h"
-#include "server-bin/log.h"
-#include "server-bin/iomanager.h"
+#include "IOCoroutineScheduler/socket.h"
+#include "IOCoroutineScheduler/log.h"
+#include "IOCoroutineScheduler/iomanager.h"
 
-static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+static bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
 
 void run(){
-    sylar::IPAddress::ptr addr = sylar::Address::LookupAnyIPAddress("0.0.0.0:8050");
-    sylar::Socket::ptr sock = sylar::Socket::CreateUDP(addr);
+    bin::IPAddress::ptr addr = bin::Address::LookupAnyIPAddress("0.0.0.0:8050");
+    bin::Socket::ptr sock = bin::Socket::CreateUDP(addr);
     if(sock->bind(addr)){
         SYLAR_LOG_INFO(g_logger) << "udp bind : " << *addr;
     } else {
@@ -15,7 +15,7 @@ void run(){
     }
     while(true){
         char buff[1024];
-        sylar::Address::ptr from(new sylar::IPv4Address);
+        bin::Address::ptr from(new bin::IPv4Address);
         int len = sock->recvFrom(buff, 1024, from);
         if(len > 0){
             buff[len] = '\0';
@@ -30,7 +30,7 @@ void run(){
 }
 
 int main(int argc, char** argv){
-    sylar::IOManager iom(1);
+    bin::IOManager iom(1);
     iom.schedule(run);
     return 0;
 }

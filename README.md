@@ -15,7 +15,9 @@ moudles you may need:
 _C++:_  
 - `cmake` for build repo  
 - `boost`   
-- `yaml` for setting configuration 
+- `yaml` for setting configuration
+- `json` for setting configuration
+- `protobuf`
 
 <strong>Usage</strong>  
 for C++, you need to compile first  

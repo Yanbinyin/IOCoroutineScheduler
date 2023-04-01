@@ -1,18 +1,18 @@
-#include "../server-bin/bin.h"
+#include "../IOCoroutineScheduler/bin.h"
 #include <unistd.h>
 
-sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
+bin::Logger::ptr g_logger = SYLAR_LOG_ROOT();
 
 int count = 0;
 int countcmp = 0;
 
-sylar::RWMutex s_mutex;
+bin::RWMutex s_mutex;
 
 //block1:检测锁在多线程中的保护作用
 #if 0
 void fun1(){
     for(int i = 0; i < 100000; ++i){
-        sylar::RWMutex::WriteLock lock(s_mutex);
+        bin::RWMutex::WriteLock lock(s_mutex);
         ++count;
     }
     for(int i = 0; i < 100000; ++i){
@@ -22,9 +22,9 @@ void fun1(){
 }
 
 void test1(){
-    std::vector<sylar::Thread::ptr> thrs;   //创建线程池
+    std::vector<bin::Thread::ptr> thrs;   //创建线程池
     for(int i = 0; i < 50; ++i){
-        sylar::Thread::ptr thr(new sylar::Thread(&fun1, "name_" + std::to_string(i)));
+        bin::Thread::ptr thr(new bin::Thread(&fun1, "name_" + std::to_string(i)));
         thrs.push_back(thr);
     }
 
@@ -48,11 +48,11 @@ int main(){
 //block2：测试子线程和父线程的执行关系：并行执行
 #if 1
 void fun2(){
-    SYLAR_LOG_INFO(g_logger) << "running thread name: " << sylar::Thread::GetName()
-                             << ", this.name: " << sylar::Thread::GetThis()->getName()
-                             << ", running thread id: " << sylar::GetThreadId()
-                             << ", this.id: " << sylar::Thread::GetThis()->getId()
-                             << ", m_thread: " << sylar::Thread::GetThis()->getThread(); 
+    SYLAR_LOG_INFO(g_logger) << "running thread name: " << bin::Thread::GetName()
+                             << ", this.name: " << bin::Thread::GetThis()->getName()
+                             << ", running thread id: " << bin::GetThreadId()
+                             << ", this.id: " << bin::Thread::GetThis()->getId()
+                             << ", m_thread: " << bin::Thread::GetThis()->getThread(); 
     /*添加睡眠，可以用终端查看进程
         ps uax | grep thread
         top -H -p 11726
@@ -62,10 +62,10 @@ void fun2(){
 
 
 void test2(){
-    std::vector<sylar::Thread::ptr> thrs;   //创建线程池
+    std::vector<bin::Thread::ptr> thrs;   //创建线程池
     for(int i = 0; i < 5; ++i){
         //power:初始化完成，子线程便会执行，和父线程分属两个分支执行
-        sylar::Thread::ptr thr(new sylar::Thread(&fun2, "name_" + std::to_string(i)));
+        bin::Thread::ptr thr(new bin::Thread(&fun2, "name_" + std::to_string(i)));
         
         sleep(0.1); //睡眠一下，等子线程执行输出
         SYLAR_LOG_INFO(g_logger) << "thread " << i << " 初始化完成";
