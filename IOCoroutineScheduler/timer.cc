@@ -10,6 +10,7 @@
  * @copyright Copyright (c) {2022}
  */
 
+#include "timer.h"
 #include "util.h"
 
 namespace bin {
