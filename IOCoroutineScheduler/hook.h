@@ -26,6 +26,7 @@ namespace bin {
  * @return hook or not
  */
 bool is_hook_enable();
+
 /**
  * @brief 设置当前线程的hook状态
  * @param flag hook or not
@@ -47,6 +48,7 @@ extern "C" {
 // sleep -> sleep_f
 // 在这里只是声明了类型，将在hook.cc中的宏定义HOOK_FUN(XX)中直接定义（定义的时候直接使用
 // 了变量名），没有规定类型，这里已经规定了
+
 typedef unsigned int (*sleep_fun)(unsigned int seconds);
 extern sleep_fun sleep_f;
 
@@ -104,7 +106,7 @@ extern sendmsg_fun sendmsg_f;
 typedef int (*close_fun)(int fd);
 extern close_fun close_f;
 
-//
+// other
 typedef int (*fcntl_fun)(int fd, int cmd, ... /* arg */);
 extern fcntl_fun fcntl_f;
 

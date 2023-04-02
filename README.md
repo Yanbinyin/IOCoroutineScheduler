@@ -9,6 +9,7 @@ This repository contains high performance I/O coroutine library, which can achie
 - Encapsulates epoll and designs I/O coroutine scheduler to achieve high concurrency and high efficiency coroutine scheduling.
 
 <strong>Implementation</strong>  
+My code style refers to Google. For more details, please read [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html)  
 Almost all codes were wrote in _C++11:_   
 moudles you may need:  
 

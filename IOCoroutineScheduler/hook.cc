@@ -128,9 +128,9 @@ static ssize_t do_io(int fd, OriginFun fun, const char *hook_fun_name,
   // c.该描述符明确不是socket或者已经被设置为NonBlock非阻塞状态，执行原来的系统调用
   if (!ctx->isSocket() || ctx->getUserNonblock())
     return fun(fd, std::forward<Args>(args)...);
-  // 后面hook住了
-  // 2.取当前套接字上的读/写超时时间getTimeout()，并且通过shared_ptr<>设置一个定时器的条件（结构体struct
-  // timer_info）用于判定定时器是否是超时被执行
+  // handle the HOOKed system call
+  // 2.取当前套接字上的读/写超时时间getTimeout()，并且通过shared_ptr<>设置一个定时器的条件
+  // （结构体struct timer_info）用于判定定时器是否是超时被执行
   uint64_t to = ctx->getTimeout(timeout_so);
   std::shared_ptr<timer_info> tinfo(new timer_info);
 retry:
@@ -147,8 +147,8 @@ retry:
     std::weak_ptr<timer_info> winfo(tinfo); // 条件变量
     // i.添加一个条件定时器ConditionTimer，将 2.中的设置的条件赋值给弱指针weak_ptr<>管理。
     // 定时器到时后，取消对应fd上的事件并且强制触发回调函数
-    if (to !=
-        (uint64_t)-1) { // 超时时间为-1说明设置了超时，这么长时间没触发，就放进定时器中主动触发
+    if (to != (uint64_t)-1) {
+      // 超时时间为-1说明设置了超时，这么长时间没触发，就放进定时器中主动触发
       timer = iom->addConditionTimer(
           to,
           [winfo, fd, iom, event]() {
@@ -322,21 +322,17 @@ int connect_with_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen,
                          uint64_t timeout_ms) {
   if (!bin::t_hook_enable)
     return connect_f(fd, addr, addrlen);
-
   bin::FdCtx::ptr ctx = bin::FdMgr::GetInstance()->get(fd);
   if (!ctx || ctx->isClose()) {
     errno = EBADF;
     return -1;
   }
-
   // 非socket
   if (!ctx->isSocket())
     return connect_f(fd, addr, addrlen);
-
   // 用户主动设置非阻塞
   if (ctx->getUserNonblock())
     return connect_f(fd, addr, addrlen);
-
   // 创建socket时候已经设置为 非阻塞的 因此这里不会阻塞
   int n = connect_f(fd, addr, addrlen);
   // 创建成功返回0
@@ -345,7 +341,6 @@ int connect_with_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen,
   // 不成功返回非0
   else if (n != -1 || errno != EINPROGRESS)
     return n;
-
   /*EINPROGRESS：
       在非阻塞模式下，如果连接不能马上建立成功就会返回该错误码。返回该错误码，可以通过使用select或者poll来查看套接字是否可写，
       如果可写，再调用getsockopt来获取套接字层的错误码errno来确定连接是否真的建立成功，
@@ -355,7 +350,6 @@ int connect_with_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen,
   bin::Timer::ptr timer;
   std::shared_ptr<timer_info> tinfo(new timer_info);
   std::weak_ptr<timer_info> winfo(tinfo);
-
   if (timeout_ms != (uint64_t)-1) {
     timer = iom->addConditionTimer(
         timeout_ms,
@@ -369,7 +363,6 @@ int connect_with_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen,
         },
         winfo);
   }
-
   // 添加写事件是因为 connect成功后马上可写
   int rt = iom->addEvent(fd, bin::IOManager::WRITE);
   if (rt == 0) {
@@ -387,14 +380,12 @@ int connect_with_timeout(int fd, const struct sockaddr *addr, socklen_t addrlen,
     }
     BIN_LOG_ERROR(g_logger) << "connect addEvent(" << fd << ", WRITE) error";
   }
-
   // 协程切回后 检查一下socket上是否有错误  才能最终判断连接是否建立
   int error = 0;
   socklen_t len = sizeof(int);
   if (-1 == getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len)) {
     return -1;
   }
-
   // 检测sockfd 上是否有错误发生 有就通过int error变量带回
   // 没有错误才是真的建立连接成功
   if (!error) {
@@ -475,15 +466,13 @@ ssize_t sendmsg(int s, const struct msghdr *msg, int flags) {
                flags);
 }
 
-// 功能：关闭文件描述符，要使用系统调用的之前，需要检查对应的fd是否存在于FdManager中，存在需要先将其删除，在关闭
 int close(int fd) {
+  // 功能：关闭文件描述符，要使用系统调用的之前，需要检查对应的fd是否存在于FdManager中，存在
+  // 需要先将其删除，在关闭
   if (!bin::t_hook_enable)
     return close_f(fd);
-
   bin::FdCtx::ptr ctx = bin::FdMgr::GetInstance()->get(fd);
-
-  // 如果是socket //hack: 为什么不空就是socket
-  if (ctx) {
+  if (ctx) { // if it is socket
     auto iom = bin::IOManager::GetThis();
     if (iom)
       iom->cancelAll(fd);
@@ -516,13 +505,11 @@ int fcntl(int fd, int cmd, ... /* arg */) {
     bin::FdCtx::ptr ctx = bin::FdMgr::GetInstance()->get(fd);
     if (!ctx || ctx->isClose() || !ctx->isSocket())
       return fcntl_f(fd, cmd, arg);
-
     ctx->setUserNonblock(arg & O_NONBLOCK);
     if (ctx->getSysNonblock())
       arg |= O_NONBLOCK;
     else
       arg &= ~O_NONBLOCK;
-
     return fcntl_f(fd, cmd, arg);
   } break;
   case F_GETFL: // 获取文件状态
@@ -538,7 +525,6 @@ int fcntl(int fd, int cmd, ... /* arg */) {
       return arg & ~O_NONBLOCK;
 
   } break;
-
   case F_DUPFD:
   case F_DUPFD_CLOEXEC:
   case F_SETFD:
@@ -554,7 +540,6 @@ int fcntl(int fd, int cmd, ... /* arg */) {
     va_end(va);
     return fcntl_f(fd, cmd, arg);
   } break;
-
   // void
   case F_GETFD:
   case F_GETOWN:
@@ -567,7 +552,6 @@ int fcntl(int fd, int cmd, ... /* arg */) {
     va_end(va);
     return fcntl_f(fd, cmd);
   } break;
-
   // flock
   case F_SETLK:
   case F_SETLKW:
@@ -576,7 +560,7 @@ int fcntl(int fd, int cmd, ... /* arg */) {
     va_end(va);
     return fcntl_f(fd, cmd, arg);
   } break;
-  /*进程组*/
+  // 进程组
   case F_GETOWN_EX:
   case F_SETOWN_EX: {
     struct f_owner_exlock *arg = va_arg(va, struct f_owner_exlock *);
@@ -595,7 +579,6 @@ int ioctl(int d, unsigned long int request, ...) {
   va_start(va, request);
   void *arg = va_arg(va, void *);
   va_end(va);
-
   if (FIONBIO == request) {
     bool user_nonblock = !!*(int *)arg;
     bin::FdCtx::ptr ctx = bin::FdMgr::GetInstance()->get(d);
@@ -630,4 +613,5 @@ int setsockopt(int sockfd, int level, int optname, const void *optval,
   }
   return setsockopt_f(sockfd, level, optname, optval, optlen);
 }
-}
+
+} // extern "C"
