@@ -27,7 +27,6 @@ bool Timer::Comparator::operator()(const Timer::ptr &lhs,
   if (!rhs) {
     return false;
   }
-
   // 都有值 判断到期时间
   if (lhs->m_next == rhs->m_next) {
     // 到期时间相等的话 地址小的优先调度
@@ -76,7 +75,6 @@ bool Timer::refresh() {
   m_manager->m_timers.erase(it);
   m_next = bin::GetCurrentMS() + m_ms;
   m_manager->m_timers.insert(shared_from_this());
-
   return true;
 }
 
@@ -110,7 +108,6 @@ bool Timer::reset(uint64_t ms, bool from_now) {
     return false;
   }
   auto it = m_manager->m_timers.find(shared_from_this());
-
   // 1、管理器内没找到
   if (it == m_manager->m_timers.end()) {
     return false;
@@ -128,7 +125,6 @@ bool Timer::reset(uint64_t ms, bool from_now) {
   // 用addTimer不用reset是因为reset可能出现执行时间变成最小的可能(放在队头)
   // 会有一次唤醒
   m_manager->addTimer(shared_from_this(), lock);
-
   return true;
 }
 
@@ -166,11 +162,9 @@ uint64_t TimerManager::getNextTimer() {
   RWMutexType::ReadLock lock(m_mutex);
   // 获取队头定时器时间一次 就可以去唤醒一次
   m_tickled = false;
-
   // 定时器队列为空返回一个极大值
   if (m_timers.empty())
     return ~0ull;
-
   const Timer::ptr &next = *m_timers.begin();
   uint64_t now_ms = bin::GetCurrentMS();
   if (now_ms >=
@@ -191,38 +185,30 @@ void TimerManager::listExpiredCb(std::vector<std::function<void()>> &cbs) {
     if (m_timers.empty())
       return;
   }
-
   // 先读锁，再写锁，检查了两次empty()
   RWMutexType::WriteLock lock(m_mutex);
   if (m_timers.empty()) {
     return;
   }
   bool rollover = detectClockRollover(now_ms);
-
   // 服务器时间没有发生改变 且不存在超时定时器 就退出函数
   if (!rollover && ((*m_timers.begin())->m_next > now_ms))
     return;
-
   // 构造一个装有当前时间的Timer为了应用lower_bound算法函数
   Timer::ptr now_timer(new Timer(now_ms));
-
   // 如果服务器时间发生了变动 就返回end() 会将整个m_timers全部清理 重新加入队列
   // 否则 将找出大于等于当前时间的第一个Timer
   auto it = rollover ? m_timers.end() : m_timers.lower_bound(now_timer);
-
   // 找到还没到时的第一个定时器的位置后 停下
   while (it != m_timers.end() && (*it)->m_next == now_ms)
     ++it;
-
   // 将队头~当前位置之前 所有已经到时的定时器全部拿出 到expired队列中
   expired.insert(expired.begin(), m_timers.begin(), it);
   // 将原队列前部到期的定时器全部移除
   m_timers.erase(m_timers.begin(), it);
-
   // 扩充可执行任务队列空间,
   // reserve()强制容器把它的容量改为至少n，提供的n不小于当前大小
   cbs.reserve(expired.size());
-
   for (auto &tmr : expired) { // tmr : timer
     cbs.push_back(tmr->m_cb);
     // 循环定时器就放回 set中
@@ -242,7 +228,6 @@ void TimerManager::addTimer(Timer::ptr val, RWMutexType::WriteLock &lock) {
     m_tickled = true;
   }
   lock.unlock(); // 解锁重载函数addTimer()中添加的锁
-
   // 当有比之前更小的
   // 定时器任务插入，需要去唤醒线程修改对应的epoll_wait的超时时间
   // epoll_wait阻塞的线程可能10s后唤醒，但是这个3s后唤醒，不能等待epoll_wait了，用
