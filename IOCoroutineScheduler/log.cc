@@ -1,3 +1,12 @@
+/**
+ * @file log.cc
+ * @author yinyb (990900296@qq.com)
+ * @brief 函数封装
+ * @version 1.0
+ * @date 2022-04-02
+ * @copyright Copyright (c) {2022}
+ */
+
 #include <functional>
 #include <iostream>
 #include <string.h>
@@ -9,22 +18,16 @@
 namespace bin {
 
 const char *LogLevel::ToString(LogLevel::Level level) {
-  // power:这个地方很秀：
-  // 1、用宏定义define简化了代码
-  // 2、用取消宏定义undef避免了宏定义的缺点
-  // bin：个人感个放在switch前面更好一点，其实差别也不大
-  switch (level) {
 #define XX(name)                                                               \
   case LogLevel::name:                                                         \
     return #name;                                                              \
     break;
-
+  switch (level) {
     XX(DEBUG);
     XX(INFO);
     XX(WARN);
     XX(ERROR);
     XX(FATAL);
-
 #undef XX
   default:
     return "UNKNOW";
