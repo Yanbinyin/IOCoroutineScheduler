@@ -1,7 +1,7 @@
 /**
  * @file config.h
  * @author yinyb (990900296@qq.com)
- * @brief 函数封装
+ * @brief 配置封装
  * @version 1.0
  * @date 2022-04-02
  * @copyright Copyright (c) {2022}

@@ -1,57 +1,94 @@
-//线程相关的封装
-/*
-    std::thread也是基于pthread实现的
-    c++11的std::thread没有提供读写锁，服务器高并发条件下很多情况读多写少，没有读写锁性能损失很大
-*/
+/**
+ * @file thread.h
+ * @author yinyb (990900296@qq.com)
+ * @brief 线程封装类
+ * @version 1.0
+ * @date 2022-04-03
+ * @copyright Copyright (c) {2022}
+ */
+
 #ifndef __BIN_THREAD_H__
 #define __BIN_THREAD_H__
 
-
 #include "mutex.h"
 
-////自己加的为了调试 
-// #include <thread>
-// #include <functional>
-// #include <memory>
-// #include <pthread.h>
-// #include "noncopyable.h"
+namespace bin {
 
-namespace bin
-{
+/**
+ * @brief 线程类
+ *  互斥量 信号量 禁止拷贝
+ */
+class Thread : Noncopyable {
+public:
+  typedef std::shared_ptr<Thread> ptr;
 
-    //线程类
-    //power:互斥量 信号量 禁止拷贝
-    class Thread : Noncopyable{
-    public:
-        typedef std::shared_ptr<Thread> ptr;
+  /**
+   * @brief Construct a new Thread object
+   *  利用pthread库开启运行线程，并且置一个信号量去等待线程完全开启后再退出构造函数
+   * @param cb the function that executes thread
+   * @param name thread name
+   */
+  Thread(std::function<void()> cb, const std::string &name);
 
-        //构造函数 cb 线程执行函数 name 线程名称
-        Thread(std::function<void()> cb, const std::string &name);
-        ~Thread();
+  /**
+   * @brief Destroy the Thread object
+   */
+  ~Thread();
 
-        pid_t getId() const { return m_id; }                    //线程ID
-        pthread_t getThread() const { return m_thread; }        //bin add return m_thread
-        const std::string &getName() const { return m_name; }   //线程名称
-        
+  /**
+   * @brief get the thread ID
+   */
+  pid_t getId() const { return m_id; }
 
-        //等待线程执行完成
-        void join();
+  /**
+   * @brief get the m_thread
+   */
+  pthread_t getThread() const { return m_thread; }
 
-        static Thread* GetThis();                     //获取当前的线程指针
-        static const std::string& GetName();          //获取当前的线程名称
-        static void SetName(const std::string& name); //设置当前线程名称
+  /**
+   * @brief get the thread name
+   */
+  const std::string &getName() const { return m_name; }
 
-    private:
-        static void *run(void *arg);    //线程执行函数
+  /**
+   * @brief get current thread pointer
+   */
+  static Thread *GetThis();
+  /**
+   * @brief get the current thread name
+   */
+  static const std::string &GetName();
 
-    private:
-        pid_t m_id = -1;            //线程id(int)  run()中初始化，用户态的线程ID和内核线程ID不是一个概念 调试时候需要拿到内核中的ID
-        pthread_t m_thread = 0;     //线程结构(unsigned long), pthread_create()中初始化
-        std::function<void()> m_cb; //线程执行函数
-        std::string m_name;         //线程名称
-        Semaphore m_semaphore;      //信号量
-    };
+  /**
+   * @brief set the current thread name
+   */
+  static void SetName(const std::string &name);
 
-}
+  /**
+   * @brief 等待线程执行完成
+   */
+  void join();
+
+private:
+  /**
+   * @brief 线程执行函数
+   * @param arg fuction that be executed in thread
+   */
+  static void *run(void *arg);
+
+private:
+  /// 线程id，run()中初始化，用户态线程ID和内核线程ID不是一个概念，调试时候需要拿到内核中的ID
+  pid_t m_id = -1;
+  /// 线程结构(unsigned long), pthread_create()中初始化
+  pthread_t m_thread = 0;
+  /// the function that executes thread
+  std::function<void()> m_cb;
+  /// thread name
+  std::string m_name;
+  /// semaphore
+  Semaphore m_semaphore;
+};
+
+} // namespace bin
 
 #endif

@@ -1,8 +1,8 @@
 #ifndef __BIN_ENV_H__
 #define __BIN_ENV_H__
 
-#include "IOCoroutineScheduler/singleton.h"
-#include "IOCoroutineScheduler/thread.h"
+#include "singleton.h"
+#include "thread.h"
 #include <map>
 #include <vector>
 

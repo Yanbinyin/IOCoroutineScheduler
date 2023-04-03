@@ -1,5 +1,5 @@
-#include "../IOCoroutineScheduler/config.h"
-#include "../IOCoroutineScheduler/log.h"
+#include "IOCoroutineScheduler/config.h"
+#include "IOCoroutineScheduler/log.h"
 #include <yaml-cpp/yaml.h>
 #include <iostream>
 
