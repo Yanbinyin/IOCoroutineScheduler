@@ -21,7 +21,6 @@ function(redefine_file_macro targetname)
     endforeach()
 endfunction()
 
-
 function(ragelmaker src_rl outputlist outputdir)
     #Create a custom build step that will call ragel on the provided src_rl file.
     #The output .cpp file will be appended to the variable name passed in outputlist.
@@ -45,8 +44,6 @@ function(ragelmaker src_rl outputlist outputdir)
     set_source_files_properties(${rl_out} PROPERTIES GENERATED TRUE)
 endfunction(ragelmaker)
 
-
-
 # 暂时未使用
 function(protobufmaker src_proto outputlist outputdir)
     #Create a custom build step that will call ragel on the provided src_rl file.
@@ -68,8 +65,6 @@ function(protobufmaker src_proto outputlist outputdir)
         )
     set_source_files_properties(${protobuf_out} PROPERTIES GENERATED TRUE)
 endfunction(protobufmaker)
-
-
 
 # 精简了cmake编译test文件
 function(LibTim_add_executable targetname srcs depends libs)
