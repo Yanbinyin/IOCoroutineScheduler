@@ -21,11 +21,13 @@ static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
 
 /// 全局静态变量，协程ID累加器
 static std::atomic<uint64_t> s_fiber_id{0};
+
 /// 全局静态变量，当前(所有)线程下存在协程的总数
 static std::atomic<uint64_t> s_fiber_count{0};
 
 /// 线程局部变量，当前线程下正在运行协程
 static thread_local Fiber *t_fiber = nullptr;
+
 /// 线程局部变量，上一次切出的协程，一般为当前线程的主协程，切换到这个协程相当于切换到主线程中运行
 static thread_local Fiber::ptr t_threadFiber = nullptr;
 
@@ -138,7 +140,6 @@ void Fiber::swapIn() {
   if (swapcontext(&Scheduler::GetMainFiber()->m_ctx, &m_ctx)) {
     // if(swapcontext(&t_threadFiber->m_ctx, &m_ctx)){
     // //test_coroutine时取消注释这里
-    BIN_LOG_ERROR(g_logger) << "swapIn: swapcontext error";
     BIN_ASSERT2(false, "swapcontext");
   }
   // BIN_LOG_INFO(g_logger) << "Fiber " << m_id << " swapin end";
@@ -151,7 +152,6 @@ void Fiber::swapOut() {
   if (swapcontext(&m_ctx, &Scheduler::GetMainFiber()->m_ctx)) {
     // if(swapcontext(&m_ctx, &t_threadFiber->m_ctx)){
     // //test_coroutine时取消注释这里
-    BIN_LOG_ERROR(g_logger) << "swapOut: swapcontext error";
     BIN_ASSERT2(false, "swapcontext");
   }
 }

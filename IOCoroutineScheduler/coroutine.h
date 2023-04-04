@@ -121,6 +121,9 @@ public:
    */
   Fiber(std::function<void()> cb, size_t stacksize = 0,
         bool use_caller = false);
+  /**
+   * @brief Destroy the Fiber object
+   */
   ~Fiber();
 
   /**
@@ -129,42 +132,89 @@ public:
    * @param cb callback function
    */
   void reset(std::function<void()> cb);
-  void swapIn();  // 将当前协程切换到运行状态，getState() = EXEC
-  void swapOut(); // 将当前协程切换到后台
-  void call(); // 将当前线程切换到执行状态，执行的为当前线程的主协程
-  void back(); // 将当前线程切换到后台 pre:执行的为该协程 post:返回线程的主协程
 
-  uint64_t getId() const { return m_id; }    // 返回协程id
-  State getState() const { return m_state; } // 返回协程状态
+  /**
+   * @brief 将当前协程切换到运行状态，getState() = EXEC
+   */
+  void swapIn();
+
+  /**
+   * @brief 将当前协程切换到后台
+   */
+  void swapOut();
+
+  /**
+   * @brief 将当前线程切换到执行状态，执行的为当前线程的主协程
+   */
+  void call();
+
+  /**
+   * @brief 将当前线程切换到后台 pre:执行的为该协程 post:返回线程的主协程
+   */
+  void back();
+
+  /**
+   * @brief 返回协程id
+   */
+  uint64_t getId() const { return m_id; }
+
+  /**
+   * @brief 返回协程状态
+   */
+  State getState() const { return m_state; }
 
 public:
-  // 设置当前线程的运行协程    f：运行协程
+  /**
+   * @brief 设置当前线程的运行协程
+   * @param f 运行协程
+   */
   static void SetThis(Fiber *f);
-  // 返回当前所在的协程，如果当前线程没有协程，会初始化一个主协程
+
+  /**
+   * @brief 返回当前所在的协程，如果当前线程没有协程，会初始化一个主协程
+   * @return 当前所在的协程
+   */
   static Fiber::ptr GetThis();
 
-  // 将当前协程切换到后台,并设置为READY状态  getState() = READY
+  /**
+   * @brief  将当前协程切换到后台,并设置为READY状态  getState() = READY
+   */
   static void YieldToReady();
-  // 将当前协程切换到后台,并设置为HOLD状态   getState() = HOLD
+
+  /**
+   * @brief 将当前协程切换到后台,并设置为HOLD状态   getState() = HOLD
+   */
   static void YieldToHold();
 
-  // 返回当前协程的总数量
+  /**
+   * @brief 返回当前协程的总数量
+   * @return 当前协程的总数量
+   */
   static uint64_t TotalFibers();
-  // 获取当前协程的id
+
+  /**
+   * @brief 获取当前协程的id
+   * @return 当前协程的id
+   */
   static uint64_t GetFiberId();
 
-  // 协程执行函数，执行完成返回到线程主协程
+  /**
+   * @brief 协程执行函数，执行完成返回到线程主协程
+   */
   static void MainFunc();
-  // 协程执行函数，执行完成返回到线程调度协程
+
+  /**
+   * @brief 协程执行函数，执行完成返回到线程调度协程
+   */
   static void CallerMainFunc();
 
 private:
-  uint64_t m_id = 0;          // 协程id
-  void *m_stack = nullptr;    // 协程运行栈指针
-  uint32_t m_stacksize = 0;   // 协程运行栈大小
-  State m_state = INIT;       // 协程状态
-  ucontext_t m_ctx;           // 协程上下文
-  std::function<void()> m_cb; // 协程运行函数
+  uint64_t m_id = 0;          /// 协程id
+  void *m_stack = nullptr;    /// 协程运行栈指针
+  uint32_t m_stacksize = 0;   /// 协程运行栈大小
+  State m_state = INIT;       /// 协程状态
+  ucontext_t m_ctx;           /// 协程上下文
+  std::function<void()> m_cb; /// 协程运行函数
 };
 
 } // namespace bin

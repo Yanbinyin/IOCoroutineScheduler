@@ -1,14 +1,26 @@
+/**
+ * @file coroutine.cc
+ * @author yinyb (990900296@qq.com)
+ * @brief 协程调度器封装类
+ * @version 1.0
+ * @date 2022-04-04
+ * @copyright Copyright (c) {2022}
+ */
+
 #include "scheduler.h"
 #include "log.h"
 #include "macro.h"
-
 #include "hook.h"
 
 namespace bin {
 
     static bin::Logger::ptr g_logger = BIN_LOG_NAME("system");
-    static thread_local Scheduler* t_scheduler = nullptr;   //GetThis()在当前线程里面获取协程id，初始化协程调度器指针
-    static thread_local Fiber* t_scheduler_fiber = nullptr; //GetMainFiber()
+
+    // GetThis()在当前线程里面获取协程id，初始化协程调度器指针
+    static thread_local Scheduler* t_scheduler = nullptr;   
+
+     //GetMainFiber()
+    static thread_local Fiber* t_scheduler_fiber = nullptr;
 
 
     Scheduler::Scheduler(size_t threads, bool use_caller, const std::string& name)
