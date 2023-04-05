@@ -28,7 +28,7 @@ static std::atomic<uint64_t> s_fiber_count{0};
 /// 线程局部变量，当前线程下正在运行协程
 static thread_local Fiber *t_fiber = nullptr;
 
-/// 线程局部变量，上一次切出的协程，一般为当前线程的主协程，切换到这个协程相当于切换到主线程中运行
+/// 线程局部变量当前线程的主协程，切换到这个协程,相当于切换到主线程中运行，一般上一次切出的协程，
 static thread_local Fiber::ptr t_threadFiber = nullptr;
 
 /// 配置项，每个协程的栈默认大小为1MB

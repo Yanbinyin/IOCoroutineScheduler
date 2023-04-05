@@ -45,8 +45,13 @@ class Scheduler {
   typedef Mutex MutexType;
 
 public:
-  // threads:线程数量 use_caller:当前线程是否纳入调度队列 默认纳入调度
-  // name:协程调度器名称
+  /**
+   * @brief Construct a new Scheduler object
+   * 
+   * @param threads 线程数量
+   * @param use_caller 当前线程是否纳入调度队列，默认纳入调度
+   * @param name 协程调度器名称
+   */
   Scheduler(size_t threads = 1, bool use_caller = true,
             const std::string &name = "");
   virtual ~Scheduler();
@@ -59,8 +64,12 @@ public:
   void start(); // 启动协程调度器
   void stop();  // 停止协程调度器
 
-  // 添加任务函数模板：单个调度协程 fc：协程或函数
-  // thread：协程执行的线程id,-1标识任意线程
+  /**
+   * @brief 
+   * @tparam FiberOrCb 添加任务函数模板：单个调度协程
+   * @param fc 协程或函数
+   * @param thread 协程执行的线程id,-1标识任意线程
+   */
   template <class FiberOrCb> void schedule(FiberOrCb fc, int thread = -1) {
     bool need_tickle = false;
     {
@@ -72,7 +81,12 @@ public:
     }
   }
 
-  // 添加任务函数模板：批量调度协程 begin：协程数组的开始 end：协程数组的结束
+  /**
+   * @brief 添加任务函数模板，批量调度协程
+   * @tparam InputIterator 迭代器类型
+   * @param begin 协程数组的开始
+   * @param end 协程数组的结束
+   */
   template <class InputIterator>
   void schedule(InputIterator begin, InputIterator end) {
     bool need_tickle = false;
@@ -103,7 +117,13 @@ protected:
   virtual void idle();
 
 private:
-  // 添加任务函数模板，真正执行添加动作
+  /**
+   * @brief 添加任务函数模板，真正执行添加动作
+   * @tparam FiberOrCb
+   * @param fc 协程或函数
+   * @param thread 协程执行的线程id,-1标识任意线程
+   * @return 是否需要tickle
+   */
   template <class FiberOrCb> bool scheduleNoLock(FiberOrCb fc, int thread) {
     bool need_tickle = m_fibers.empty();
     FiberAndThread ft(fc, thread);
@@ -183,22 +203,21 @@ private:
     }
   };
 
-private:
-  MutexType m_mutex;
-  std::vector<Thread::ptr> m_threads; /// 线程池
-  std::list<FiberAndThread> m_fibers; /// 即将执行或者计划执行的协程队列
-  Fiber::ptr m_rootFiber; /// 主协程智能指针 use_caller为true时有效, 调度协程
-  std::string m_name; /// 协程调度器名称
-
 protected:
-  // 协程状态相关的成员变量
-  int m_rootThread = 0; /// 主线程id(不作为调度线程use_caller为-1)
-  std::vector<int> m_threadIds; /// 协程下的线程id数组，储存所有线程id
   size_t m_threadCount = 0;                   /// 线程总数
+  std::vector<Thread::ptr> m_threads;         /// 线程池
+  std::vector<int> m_threadIds;               /// 线程id数组(除主线程)
   std::atomic<size_t> m_activeThreadCount{0}; /// 工作线程数量
   std::atomic<size_t> m_idleThreadCount{0};   /// 空闲线程数量
-  bool m_stopping = true;                     /// 是否正在停止
-  bool m_autoStop = false;                    /// 是否自动停止
+  Fiber::ptr m_rootFiber; /// use_caller=true时，调度器所在线程的调度协程
+  int m_rootThread = 0; /// use_caller=true时，调度器所在线程的线程id
+  bool m_stopping = true;  /// 是否正在停止
+  bool m_autoStop = false; /// 是否自动停止
+
+private:
+  MutexType m_mutex;                  /// 锁
+  std::string m_name;                 /// 协程调度器名称
+  std::list<FiberAndThread> m_fibers; /// 协程任务队列
 };
 
 class SchedulerSwitcher : public Noncopyable {

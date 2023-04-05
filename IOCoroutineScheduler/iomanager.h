@@ -97,7 +97,7 @@ public:
    */
   bool cancelEvent(int fd, Event event);
   /**
-   * @brief 取消fd句柄的所有事件
+   * @brief 取消fd句柄的所有事件  
    * @param fd socket句柄
    * @return return success or not
    */
