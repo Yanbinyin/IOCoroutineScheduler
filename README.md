@@ -11,7 +11,7 @@ This repository contains high performance I/O coroutine library, which can achie
 <strong>Implementation</strong>  
 My code style refers to Google. For more details, please read [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html)  
 Almost all codes were wrote in _C++11:_   
-moudles you may need:  
+modules you may need:  
 
 _C++:_  
 - `cmake` for build repo  
@@ -46,10 +46,10 @@ Provides thread classes and thread synchronization classes, based on the `pthrea
     > Why not use the `thread` provided by C++11?  
     > Because `thread` is actually implemented based on `pthread`. In addition, C++11 does not provide read/write mutex, RWMutex, Spinlock, etc. In high-concurrency scenarios, these objects are often needed, and we do not need cross-platform development (only linux is supported). Therefore, we choose to encapsulate `pthread` by ourselves.
 
-* Corountine  
+* Coroutine  
 Realization of asymmetric coroutine based on `ucontext_t`. Coroutine scheduling is not involved.  
 
-* Corountine Scheduling  
+* Coroutine Scheduling  
 A N-M coroutine scheduler is implemented, N threads run M coroutines, coroutines can be switched between threads, can also be bound to the specified thread run.
 
 * IO Corountine Scheduling  
@@ -74,7 +74,7 @@ Testcases.
 ## Folder structure
 
 + bin：Binary files
-+ build：Build filess
++ build：Build files
 + cmake：Cmake include files
 + CMakeLists.txt：cmake
 + lib：.so file
